@@ -1,0 +1,112 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+#content{
+    display: flex;
+    flex-direction: row;
+}
+
+#left{
+    width: 50px;
+    height: 100vh;
+    background: #f1f1f1;
+}
+
+#right{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% - 50px);
+    height: 100vh;
+    background: #fefefe;
+}
+
+.logo{
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    filter: grayscale(100%);
+}
+
+.logo img{
+    width: 30px;
+    height: 30px;
+    boder-radius: 50%;
+}
+
+.logo:hover{
+    background: #d1d1d1;
+    filter: grayscale(0%);
+}
+
+
+.highlighted .logo{
+    border-left: 3px solid #10A37F;
+    background: white;
+    filter: grayscale(0%);
+}
+
+#set-box{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+}
+
+.loader {
+    width: 50px;
+    aspect-ratio: 1;
+    display: grid;
+    border-radius: 50%;
+    background:
+            linear-gradient(0deg ,rgb(0 0 0/50%) 30%,#0000 0 70%,rgb(0 0 0/100%) 0) 50%/8% 100%,
+            linear-gradient(90deg,rgb(0 0 0/25%) 30%,#0000 0 70%,rgb(0 0 0/75% ) 0) 50%/100% 8%;
+    background-repeat: no-repeat;
+    animation: l23 1s infinite steps(12);
+}
+.loader::before,
+.loader::after {
+    content: "";
+    grid-area: 1/1;
+    border-radius: 50%;
+    background: inherit;
+    opacity: 0.915;
+    transform: rotate(30deg);
+}
+.loader::after {
+    opacity: 0.83;
+    transform: rotate(60deg);
+}
+@keyframes l23 {
+    100% {transform: rotate(1turn)}
+}
+
+/* HTML: <div class="loader"></div> */
+/*.loader {*/
+/*    width: fit-content;*/
+/*    padding-bottom: 5px;*/
+/*    font-weight: bold;*/
+/*    font-family: monospace;*/
+/*    font-size: 30px;*/
+/*    overflow: hidden;*/
+/*    color: #0000;*/
+/*    text-shadow: 0 0 0 #000,10ch 0 0 #000;*/
+/*    background: linear-gradient(to right, #000 0%, #10A37F 100%) bottom left/0% 3px no-repeat;*/
+/*    animation: l14 5s infinite;*/
+/*}*/
+/*.loader:before {*/
+/*    content: "Loading...";*/
+/*}*/
+/*@keyframes l14 {*/
+/*    80%  {text-shadow:    0  0 0 #000,10ch 0 0 #000;background-size:100% 3px}*/
+/*    100% {text-shadow: -10ch 0 0 #000,0    0 0 #000}*/
+/*}*/
