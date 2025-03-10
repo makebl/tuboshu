@@ -41,7 +41,7 @@ class ViewManager {
                     preload: CONS.PATH.APP_PATH + '/app/preloadUrl.js'
                 }})
 
-            if(tag === "设置"){
+            if(url.startsWith("gui/")){
                 view.webContents.loadFile(url)
             }else{
                 view.webContents.loadURL(url)

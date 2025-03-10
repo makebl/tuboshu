@@ -1,14 +1,35 @@
 <script setup>
 import NewDrawer from "@/components/NewDrawer.vue";
-import {onMounted} from "vue";
+import { ref, onMounted, onUnmounted } from 'vue';
 
 const ele = ref({});
 const show = ref(false);
 const list = ref([]);
 
+const dynamicDiv = ref(null);
+const dynamicHeight = ref(0);
+const adjustHeight = () => {
+  if (!dynamicDiv.value) return;
+  const viewportHeight = window.innerHeight;
+  const divTop = dynamicDiv.value.getBoundingClientRect().top;
+  const height = Math.max(0, viewportHeight - divTop);
+  dynamicDiv.value.style.height = `${height - 20}px`;
+  dynamicHeight.value = height-20;
+};
+
+
 onMounted(async () => {
+  adjustHeight();
+  window.addEventListener('resize', adjustHeight);
+  window.addEventListener('scroll', adjustHeight);
+
   const config = await window.myApi.getConfig();
   list.value = [...config.openMenus, ...config.closeMenus];
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', adjustHeight);
+  window.removeEventListener('scroll', adjustHeight);
 });
 
 const addNew = () => {
@@ -69,10 +90,12 @@ const handleSaveForm = (element) => {
           新增站点
         </n-button>
       </div>
-      <div class="wrap">
-        <template v-for="element in list">
-          <LinkItem :element="element" @edit="handleEdit" @remove="handleRemove" />
-        </template>
+      <div ref="dynamicDiv" class="box-card">
+        <div class="wrap">
+          <template v-for="element in list">
+            <LinkItem :element="element" @edit="handleEdit" @remove="handleRemove" />
+          </template>
+        </div>
       </div>
     </div>
   </div>
@@ -87,6 +110,12 @@ const handleSaveForm = (element) => {
   flex: 1;
   border: 1px solid var(--color-border);
 }
+
+.box-card{
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
 .wrap{
   padding: 0.5em;
 }

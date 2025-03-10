@@ -1,6 +1,6 @@
 {
   "name": "tuboshu",
-  "version": "v1.0.0",
+  "version": "v1.0.2",
   "main": "app/main.js",
   "scripts": {
     "start": "electron .",
@@ -18,13 +18,18 @@
     "lokijs": "^1.5.12"
   },
   "build": {
+    "appId": "com.shaziai.shaziai",
+    "productName": "Tuboshu",
+    "npmRebuild": false,
     "files": [
       "**/*",
-      "!gui/setting/*"
+      "!gui/setting/*",
+      "!dist/*",
+      "!node_modules/**/{.cache,.bin,test}"
     ],
-    "appId": "com.shaziai.shaziai",
-    "productName": "ShaziAI",
-    "npmRebuild": false,
+    "asar": true,
+    "compression": "maximum",
+    "npmArgs": ["--production"],
     "mac": {
       "category": "my.category.type"
     },
