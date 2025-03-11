@@ -3,7 +3,6 @@ const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
 const viewManager = require('./viewManager');
 const lokiManager = require('./lokiManager');
-const CONS = require("./constants");
 
 // 在 Electron 中，你可以通过简单的字符串组合来定义一系列的快捷键。
 // 这些字符串是由一个或多个由加号(+)连接的修饰键和一个键（key）组成。
