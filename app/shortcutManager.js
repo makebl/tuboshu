@@ -2,6 +2,8 @@ const { globalShortcut, screen} = require('electron');
 const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
 const viewManager = require('./viewManager');
+const lokiManager = require('./lokiManager');
+const CONS = require("./constants");
 
 // 在 Electron 中，你可以通过简单的字符串组合来定义一系列的快捷键。
 // 这些字符串是由一个或多个由加号(+)连接的修饰键和一个键（key）组成。
@@ -35,8 +37,20 @@ function initShortcut() {
 
     //刷新当前页面
     globalShortcut.register('CommandOrControl+R', () => {
-        viewManager.views.forEach(view => {
-            if(view.object.getVisible()) view.object.webContents.reload();
+        const view = viewManager.getActiveView();
+        if(view) view.object.webContents.reload();
+    });
+
+    //循环选择站点
+    globalShortcut.register('CommandOrControl+Tab', () => {
+        const view = viewManager.getActiveView();
+        lokiManager.then((manager) => {
+            const openMenus = manager.getMenus().openMenus;
+            let idx = openMenus.findIndex(item => item.url === view.url);
+            if(openMenus.length === (idx+1))  idx= -1;
+
+            let menuView = windowManager.getMenuView();
+            menuView.webContents.send('auto:click', openMenus[idx+1]);
         })
     });
 

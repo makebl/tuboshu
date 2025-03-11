@@ -18,8 +18,8 @@ module.exports = Object.freeze({
         {
             tag:  "设置",
             name: "setting",
-            //url: "gui/dist/index.html/",
-            url: "http://localhost:5173/",
+            url: "gui/dist/index.html/",
+            //url: "http://localhost:5173/",
             img: "/gui/static/images/logo/setting.png",
         },
     ],

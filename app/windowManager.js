@@ -6,6 +6,7 @@ const lokiManager = require('./lokiManager');
 
 class WindowManager{
 
+    cleanupTimer = null;
     constructor() {
         this.window = null
         this.menuView = null
@@ -61,6 +62,7 @@ class WindowManager{
 
         this.bindIpcMain();
         this.bindEvents();
+        this.uselessSiteCleaner();
     }
 
     bindIpcMain(){
@@ -151,6 +153,32 @@ class WindowManager{
     }
     gotoSetting(){
         this.menuView.webContents.send('auto:click', CONS.SETTING[0]);
+    }
+
+    uselessSiteCleaner(){
+        const currentView = viewManager.getActiveView();
+        lokiManager.then((manager) => {
+            const urls = manager.getMenus().openMenus.map(item => item.url);
+            viewManager.views = viewManager.views.filter(view => {
+                if(currentView.url === view.url) return true;
+
+                const notInMenu = !urls.includes(view.url);
+                const overOneHour = (Date.now() / 1000 - view.time) > 3600;
+
+                if (notInMenu || overOneHour) {
+                    this.webView.removeChildView(view.object);
+                    view.object.webContents.close();
+                    return false;
+                }
+                return true;
+            })
+        })
+
+        clearTimeout(this.cleanupTimer);
+        this.cleanupTimer = setTimeout(() => this.uselessSiteCleaner(), 10*60*1000);
+    }
+    destroy() {
+        clearTimeout(this.cleanupTimer);
     }
 }
 

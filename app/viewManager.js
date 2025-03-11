@@ -17,6 +17,10 @@ class ViewManager {
         return false;
     }
 
+    getActiveView() {
+        return this.views.find(view => view.object.getVisible());
+    }
+
     activeView(url) {
         const timestamp = Math.floor(Date.now() / 1000);
         for (let i = 0; i < this.views.length; i++) {
@@ -45,7 +49,9 @@ class ViewManager {
         if(url.startsWith("gui/")){
             view.webContents.loadFile(url).then(r => {})
         }else{
-            view.webContents.loadURL(url).then(r => {})
+            view.webContents.loadURL(url).catch(e => {
+                view.webContents.loadFile("gui/error.html").then(r => {})
+            })
         }
 
         //view.webContents.openDevTools();
