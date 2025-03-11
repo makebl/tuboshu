@@ -10,18 +10,27 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        arch: [x64, arm64]
         os: [macos-latest, ubuntu-latest, windows-latest]
+        arch: [x64, arm64]
         include:
+          # macOS 支持两种架构
           - os: macos-latest
             platform: mac
             artifact_name: mac
+            arch: x64
+          - os: macos-latest
+            platform: mac
+            artifact_name: mac
+            arch: arm64
+          # Linux 和 Windows 暂时只支持 x64
           - os: ubuntu-latest
             platform: linux
             artifact_name: linux
+            arch: x64
           - os: windows-latest
             platform: win
             artifact_name: win
+            arch: x64
 
     steps:
       - name: Checkout Code
@@ -47,14 +56,14 @@ jobs:
         run: npm ci
 
       - name: Build Electron App
-        run: npm run build -- --${{ matrix.platform }}
+        run: npm run build -- --${{ matrix.platform }} --arch ${{ matrix.arch }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.artifact_name }}
+          name: build-${{ matrix.artifact_name }}-${{ matrix.arch }}
           path: dist/
           if-no-files-found: error
 
