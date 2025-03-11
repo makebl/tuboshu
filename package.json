@@ -18,12 +18,15 @@
     "lokijs": "^1.5.12"
   },
   "build": {
-    "appId": "com.shaziai.shaziai",
+    "appId": "com.tuboshu.tuboshu",
     "productName": "Tuboshu",
     "npmRebuild": false,
     "files": [
       "**/*",
-      "!gui/setting/*",
+      "!.github/**/*",
+      "!.git/**/*",
+      "!.idea/**/*",
+      "!gui/setting/**/*",
       "!dist/*",
       "!node_modules/**/{.cache,.bin,test}"
     ],
@@ -31,7 +34,9 @@
     "compression": "maximum",
     "npmArgs": ["--production"],
     "mac": {
-      "category": "my.category.type"
+      "category": "my.category.type",
+      "target": "dmg",
+      "identity": null
     },
     "win": {
       "target": "NSIS",
