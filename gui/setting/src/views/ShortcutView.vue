@@ -45,6 +45,10 @@ const data = [
     name: "Ctrl + .",
     desc: "屏幕右边小窗"
   },
+  {
+    name: "Ctrl + R",
+    desc: "刷新当前页面"
+  },
 ];
 </script>
 

@@ -33,35 +33,35 @@ class ViewManager {
         if (this.isExist(url)) {
             this.activeView(url)
             return null;
-        }else{
-            let view = new WebContentsView({
-                webPreferences: {
-                    nodeIntegration: false,
-                    contextIsolation: true,
-                    preload: CONS.PATH.APP_PATH + '/app/preloadUrl.js'
-                }})
-
-            if(url.startsWith("gui/")){
-                view.webContents.loadFile(url)
-            }else{
-                view.webContents.loadURL(url)
-            }
-
-            //view.webContents.openDevTools();
-            view.webContents.setWindowOpenHandler(({ url }) => {
-                return {
-                    action: 'allow',
-                    overrideBrowserWindowOptions: {autoHideMenuBar:true}
-                }
-            })
-
-            this.addView({
-                url: url.toLowerCase(),
-                time: Math.floor(Date.now() / 1000),
-                object: view
-            })
-            return view
         }
+
+        let view = new WebContentsView({
+            webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true,
+                preload: CONS.PATH.APP_PATH + '/app/preloadUrl.js'
+            }})
+
+        if(url.startsWith("gui/")){
+            view.webContents.loadFile(url).then(r => {})
+        }else{
+            view.webContents.loadURL(url).then(r => {})
+        }
+
+        //view.webContents.openDevTools();
+        view.webContents.setWindowOpenHandler(({ url }) => {
+            return {
+                action: 'allow',
+                overrideBrowserWindowOptions: {autoHideMenuBar:true}
+            }
+        })
+
+        this.addView({
+            url: url.toLowerCase(),
+            time: Math.floor(Date.now() / 1000),
+            object: view
+        })
+        return view
     }
 }
 

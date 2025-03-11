@@ -34,7 +34,7 @@ function updateCloseMenu(evt) {
     </n-alert>
 
     <n-alert :show-icon="false">
-      1.在图标上按住鼠标左键拖动可排；<br />
+      1.在图标上按住鼠标左键拖动可排序；<br />
       2.部分站点需要魔法上网，请自行解决。
     </n-alert>
 

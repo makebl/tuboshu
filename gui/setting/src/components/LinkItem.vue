@@ -35,12 +35,12 @@ const changeSwitch = (val)=>{
 
 <template>
   <div class="wrap">
-    <div class="avatar">
+
       <n-image
           width="40"
           :src="element.img"
       />
-    </div>
+
     <div class="link">
       <div> {{ element.tag }}</div>
       <div> {{ element.url }}</div>
@@ -55,7 +55,7 @@ const changeSwitch = (val)=>{
       </n-dropdown>
     </div>
     <div class="switch">
-      <n-switch size="medium" v-model:value="element.isOpen" @update:value="changeSwitch" >
+      <n-switch size="medium" v-model:value="element.isOpen" @update:value="changeSwitch" style="font-size:12px;" >
         <template #checked>
           开启
         </template>
@@ -74,13 +74,18 @@ const changeSwitch = (val)=>{
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  align-items: center;
   place-items: center;
-  border: 1px solid var(--color-border);
+  border-bottom: 1px dashed var(--color-border);
   gap: 10px;
 }
-
+.link{
+  font-size: 14px;
+  color: #333;
+}
 .switch{
   text-align: center;
+  vertical-align: center;
   width: 100px;
   flex-shrink: 0;
 }

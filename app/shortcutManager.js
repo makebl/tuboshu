@@ -1,6 +1,7 @@
 const { globalShortcut, screen} = require('electron');
 const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
+const viewManager = require('./viewManager');
 
 // 在 Electron 中，你可以通过简单的字符串组合来定义一系列的快捷键。
 // 这些字符串是由一个或多个由加号(+)连接的修饰键和一个键（key）组成。
@@ -30,6 +31,13 @@ function initShortcut() {
     //真实退出
     globalShortcut.register('CommandOrControl+Q', () => {
         trayManager.reallyQuitApp();
+    });
+
+    //刷新当前页面
+    globalShortcut.register('CommandOrControl+R', () => {
+        viewManager.views.forEach(view => {
+            if(view.object.getVisible()) view.object.webContents.reload();
+        })
     });
 
     //是否置顶

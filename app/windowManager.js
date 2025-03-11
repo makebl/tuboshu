@@ -115,15 +115,13 @@ class WindowManager{
     }
 
     bindEvents(){
-        // 自适应布局
         this.window.on('resize', () => {
-            let [width, height] = this.window.getContentSize();
-            this.menuView.setBounds({ x: 0, y: 0, width: CONS.SIZE.MENU_WIDTH, height })
-            this.webView.setBounds({ x: CONS.SIZE.MENU_WIDTH, y: 0, width: width - CONS.SIZE.MENU_WIDTH, height })
+            this.handleResize()
+        })
 
-            viewManager.views.forEach(view => {
-                view.object.setBounds({ x: 0, y: 0, width: width - CONS.SIZE.MENU_WIDTH, height })
-            })
+        this.window.on('show', () => {
+            if(this.menuView.webContents.isLoading()) return;
+            this.handleResize();
         })
 
         //窗口准备销毁，阻止默认事件
@@ -137,10 +135,20 @@ class WindowManager{
         //窗口已经销毁，清理资源
         this.window.on('closed', (e) => {
             this.window.removeAllListeners('resize');
+            this.window.removeAllListeners('show');
             ipcMain.removeHandler('window-specific-event');
         })
     }
 
+    handleResize() {
+        const [width, height] = this.window.getContentSize();
+        this.menuView.setBounds({ x: 0, y: 0, width: CONS.SIZE.MENU_WIDTH, height });
+        this.webView.setBounds({ x: CONS.SIZE.MENU_WIDTH, y: 0, width: width - CONS.SIZE.MENU_WIDTH, height });
+
+        viewManager.views.forEach(view => {
+            view.object.setBounds({ x: 0, y: 0, width: width - CONS.SIZE.MENU_WIDTH, height });
+        });
+    }
     gotoSetting(){
         this.menuView.webContents.send('auto:click', CONS.SETTING[0]);
     }
