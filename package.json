@@ -36,15 +36,17 @@
     "mac": {
       "category": "my.category.type",
       "target": "dmg",
+      "icon": "build/mac_icon.icns",
       "identity": null
     },
     "win": {
       "target": "NSIS",
-      "icon": "icon.ico"
+      "icon": "build/win_icon.ico"
     },
     "linux": {
+      "category": "utility",
       "target": ["AppImage", "deb"],
-      "icon": "icons"
+      "icon": "build/linux_icon.png"
     },
     "nsis": {
       "oneClick": false,
