@@ -7,7 +7,10 @@
     "pack": "electron-builder --dir",
     "build": "electron-builder"
   },
-  "author": "rubyzhu",
+  "author": {
+    "name": "deepshit2025",
+    "email": "lyf200@qq.com"
+  },
   "license": "ISC",
   "description": "tuboshu",
   "devDependencies": {
