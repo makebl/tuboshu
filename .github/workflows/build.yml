@@ -13,7 +13,6 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
         arch: [x64, arm64]
         include:
-          # macOS 支持两种架构
           - os: macos-latest
             platform: mac
             artifact_name: mac
@@ -22,7 +21,6 @@ jobs:
             platform: mac
             artifact_name: mac
             arch: arm64
-          # Linux 和 Windows 暂时只支持 x64
           - os: ubuntu-latest
             platform: linux
             artifact_name: linux
@@ -90,5 +88,7 @@ jobs:
           name: Release ${{ github.ref_name }}
           files: |
             artifacts/**/*
+            !artifacts/**/*.yml
+            !artifacts/**/*.blockmap
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

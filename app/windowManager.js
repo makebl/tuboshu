@@ -130,7 +130,6 @@ class WindowManager{
         this.window.on('focus', () => {
             this.window.setOpacity(0.99);
             this.window.setOpacity(1);
-
             //viewManager.getActiveView().webContents.send('force:redraw');
         });
 

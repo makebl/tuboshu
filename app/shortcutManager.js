@@ -3,6 +3,7 @@ const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
 const viewManager = require('./viewManager');
 const lokiManager = require('./lokiManager');
+const CONS = require('./constants');
 
 // 在 Electron 中，你可以通过简单的字符串组合来定义一系列的快捷键。
 // 这些字符串是由一个或多个由加号(+)连接的修饰键和一个键（key）组成。
@@ -61,13 +62,17 @@ function initShortcut() {
 
     //复原显示
     globalShortcut.register('CommandOrControl+O', () => {
-        const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+        let win = windowManager.getWindow()
+        const [width, height] = win.getSize();
 
-        let win = windowManager.getWindow();
-        if(win.isMaximized()) win.unmaximize();
-        win.setSize(1024, 768, true);
-        win.setPosition((width/2-1024/2), (height/2-768/2), true)
-        if(!win.isVisible()) win.show();
+        if(width === CONS.SIZE.WIDTH && height === CONS.SIZE.HEIGHT){
+            win.maximize();
+        }else{
+            if(win.isMaximized()) win.unmaximize();
+            if(!win.isVisible()) win.show();
+            win.setSize(CONS.SIZE.WIDTH, CONS.SIZE.HEIGHT, true);
+            win.center();
+        }
     });
 
     //最小化窗口
