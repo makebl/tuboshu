@@ -1,8 +1,8 @@
 const { app, BaseWindow, View, ipcMain, clipboard, WebContentsView } = require('electron')
-const CONS = require('./constants');
 const viewManager = require('./viewManager');
 const lokiManager = require('./lokiManager');
-
+const eventManager = require('./eventManager');
+const CONS = require('./constants');
 
 class WindowManager{
 
@@ -67,6 +67,11 @@ class WindowManager{
     }
 
     bindIpcMain(){
+
+        eventManager.on('set:title', (data) => {
+            this.window.setTitle(data);
+        });
+
         //跳转页面
         ipcMain.on('reload:url', (event, url, tag) => {
             let view = viewManager.createNewView(url, tag)

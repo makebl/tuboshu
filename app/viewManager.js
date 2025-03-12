@@ -1,5 +1,7 @@
 const { WebContentsView} = require('electron')
+const eventManager = require('./eventManager');
 const CONS = require('./constants');
+
 class ViewManager {
     constructor() {
         this.views = [];
@@ -47,9 +49,13 @@ class ViewManager {
             }})
 
         if(url.startsWith("gui/")){
-            view.webContents.loadFile(url).then(r => {})
+            view.webContents.loadFile(url).then(() => {
+                eventManager.emit('set:title', view.webContents.getTitle());
+            })
         }else{
-            view.webContents.loadURL(url).catch(e => {
+            view.webContents.loadURL(url).then(()=>{
+                eventManager.emit('set:title', view.webContents.getTitle());
+            }).catch(e => {
                 view.webContents.loadFile("gui/error.html").then(r => {})
             })
         }
