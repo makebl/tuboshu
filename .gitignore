@@ -1,6 +1,5 @@
 dist/
 node_modules/
 .idea/
-gui/dist/
 gui/setting/node_modules/
 loki.db*
