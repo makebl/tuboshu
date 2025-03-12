@@ -1,6 +1,6 @@
 {
   "name": "tuboshu",
-  "version": "v1.0.2",
+  "version": "v1.0.3",
   "main": "app/main.js",
   "scripts": {
     "start": "electron .",
