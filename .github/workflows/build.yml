@@ -64,7 +64,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.artifact_name }}-${{ matrix.arch }}
-          path: dist/
+          path: |
+            dist/*.exe
+            dist/*.deb
+            dist/*.AppImage
+            dist/*.dmg
           overwrite: true
           if-no-files-found: error
 
@@ -79,10 +83,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-      - name: Remove unwanted files
-        run: |
-          rm -r artifacts/*.yml
-          rm -r artifacts/*.blockmap
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
