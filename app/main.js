@@ -4,6 +4,7 @@ const trayManager = require('./trayManager');
 const shortcutManager = require('./shortcutManager');
 
 app.isQuitting = false;
+app.disableHardwareAcceleration();
 const singleLock = app.requestSingleInstanceLock();
 app.whenReady().then(() => {
   if (!singleLock) return app.quit();

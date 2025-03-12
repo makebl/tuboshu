@@ -6,6 +6,7 @@ const lokiManager = require('./lokiManager');
 
 class WindowManager{
 
+    resizeTimer = null;
     cleanupTimer = null;
     constructor() {
         this.window = null
@@ -117,19 +118,20 @@ class WindowManager{
     }
 
     bindEvents(){
+        // this.window.on('restore', () => {});
+
         this.window.on('resize', () => {
-            this.handleResize()
+            if (this.resizeTimer) clearTimeout(this.resizeTimer);
+            this.resizeTimer = setTimeout(() => {
+                this.handleResize();
+            }, 200);
         })
 
-        // this.window.on('show', () => {
-        //     if(this.menuView.webContents.isLoading()) return;
-        //     this.handleResize();
-        // })
-
         this.window.on('focus', () => {
-            console.log('get focus');
-            if(this.menuView.webContents.isLoading()) return;
-            this.handleResize();
+            this.window.setOpacity(0.99);
+            this.window.setOpacity(1);
+
+            //viewManager.getActiveView().webContents.send('force:redraw');
         });
 
         //窗口准备销毁，阻止默认事件
@@ -144,7 +146,6 @@ class WindowManager{
         this.window.on('closed', (e) => {
             this.window.removeAllListeners('resize');
             this.window.removeAllListeners('show');
-            ipcMain.removeHandler('window-specific-event');
         })
     }
 
