@@ -121,10 +121,16 @@ class WindowManager{
             this.handleResize()
         })
 
-        this.window.on('show', () => {
+        // this.window.on('show', () => {
+        //     if(this.menuView.webContents.isLoading()) return;
+        //     this.handleResize();
+        // })
+
+        this.window.on('focus', () => {
+            console.log('get focus');
             if(this.menuView.webContents.isLoading()) return;
             this.handleResize();
-        })
+        });
 
         //窗口准备销毁，阻止默认事件
         this.window.on('close', (e) => {

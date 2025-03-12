@@ -34,27 +34,32 @@
       "!node_modules/**/{.cache,.bin,test}"
     ],
     "asar": true,
+    "asarUnpack": [],
     "compression": "maximum",
-    "npmArgs": ["--production"],
     "mac": {
-      "category": "my.category.type",
+      "category": "public.app-category.productivity",
       "target": "dmg",
       "icon": "build/mac_icon.icns",
-      "identity": null
+      "identity": null,
+      "artifactName": "${productName}-Setup-${version}-mac-${arch}.${ext}"
     },
     "win": {
-      "target": "NSIS",
-      "icon": "build/win_icon.ico"
+      "target": "nsis",
+      "icon": "build/win_icon.ico",
+      "artifactName": "${productName}-Setup-${version}-win-${arch}.${ext}"
     },
     "linux": {
       "category": "utility",
       "target": ["AppImage", "deb"],
-      "icon": "build/linux_icon.png"
+      "icon": "build/linux_icon.png",
+      "artifactName": "${productName}-Setup-${version}-linux-${arch}.${ext}"
     },
     "nsis": {
       "oneClick": false,
       "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
       "installerIcon": "icon.ico",
       "uninstallerIcon": "icon.ico",
       "installerHeaderIcon": "icon.ico"
