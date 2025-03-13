@@ -29,6 +29,7 @@ class ViewManager {
             if (this.views[i].url === url.toLowerCase()) {
                 this.views[i].time = timestamp;
                 this.views[i].object.setVisible(true)
+                eventManager.emit('set:title', this.views[i].object.webContents.getTitle());
             }else{
                 this.views[i].object.setVisible(false)
             }

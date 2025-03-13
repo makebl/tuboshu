@@ -67,7 +67,6 @@ class WindowManager{
     }
 
     bindIpcMain(){
-
         eventManager.on('set:title', (data) => {
             this.window.setTitle(data);
         });

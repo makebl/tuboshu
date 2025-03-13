@@ -3,6 +3,7 @@ const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
 const shortcutManager = require('./shortcutManager');
 
+const version = app.getVersion();
 app.isQuitting = false;
 // app.disableHardwareAcceleration();
 const singleLock = app.requestSingleInstanceLock();

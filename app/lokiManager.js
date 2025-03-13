@@ -1,8 +1,9 @@
+const {app, nativeImage} = require("electron");
 const Loki = require('lokijs');
+const path = require('path');
 const CONS = require('./constants');
-const {nativeImage} = require("electron");
 
-const dbPath = CONS.PATH.APP_PATH + "/loki.db";
+const dbPath = path.join(app.getPath('userData'),  'data.db');
 const processImg = (menuArray) => menuArray.map(element => {
     if(element.img.startsWith("data:")) return element;
     if(element.img.includes("preview_default")) element.img = CONS.PREVIEW_IMG;
