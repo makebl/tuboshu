@@ -25,10 +25,18 @@ jobs:
             platform: linux
             artifact_name: linux
             arch: x64
+          - os: ubuntu-latest
+            platform: linux
+            artifact_name: linux
+            arch: arm64
           - os: windows-latest
             platform: win
             artifact_name: win
             arch: x64
+          - os: windows-latest
+            platform: win
+            artifact_name: win
+            arch: arm64
 
     steps:
       - name: Checkout Code
