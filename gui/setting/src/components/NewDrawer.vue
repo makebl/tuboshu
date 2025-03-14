@@ -13,7 +13,7 @@ watch(() => props.element, (newVal) => {
 
 const emit = defineEmits(['update:show', 'saveForm'])
 const title =  computed(()=>{
-  return Object.keys(props.element).length !== 0 ? '编辑标签' : '新增标签'
+  return props.element.isNew !== false ? '新增站点' : '编辑站点'
 })
 
 const handleClose = () => {
@@ -35,7 +35,7 @@ const handleSave = () => {
     return message.error("请输入合法 URL");
   }
   formData.img = uploader.value.getUrl();
-  emit('saveForm', formData)
+  emit('saveForm',  JSON.parse(JSON.stringify(formData)))
   emit('update:show', false)
   return message.success("保存成功");
 }

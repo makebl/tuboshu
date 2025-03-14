@@ -39,7 +39,7 @@ const addNew = () => {
 
 const handleEdit = (element) => {
   element.isNew = false;
-  ele.value = element;
+  ele.value = JSON.parse(JSON.stringify(element));
   show.value = true;
 };
 

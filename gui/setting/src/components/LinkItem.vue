@@ -28,6 +28,7 @@ const handleClick = ()=> {
 
 const changeSwitch = (val)=>{
   let menu = Object.assign(toRaw(props.element), { isOpen: val});
+  console.log("menu:",menu)
   window.myApi.updateMenu(menu);
 }
 

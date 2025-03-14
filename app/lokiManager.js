@@ -68,7 +68,7 @@ class LokiManager {
 
     updateSite(site) {
         const sitesCollection = this.db.getCollection('sites');
-        sitesCollection.update(site);
+        sitesCollection.findAndUpdate({name: site.name}, (doc)=>{Object.assign(doc, site)});
         this.db.saveDatabase();
     }
 

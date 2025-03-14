@@ -173,7 +173,7 @@ class WindowManager{
                 if(currentView.url === view.url) return true;
 
                 const notInMenu = !urls.includes(view.url);
-                const overOneHour = (Date.now() / 1000 - view.time) > 3600;
+                const overOneHour = (Date.now() / 1000 - view.time) > 1800;
 
                 if (notInMenu || overOneHour) {
                     this.webView.removeChildView(view.object);

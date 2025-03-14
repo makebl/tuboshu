@@ -152,6 +152,15 @@ function initShortcut() {
         win.setPosition(0, height/2, true);
         if(!win.isVisible()) win.show();
     });
+
+    globalShortcut.register('CommandOrControl+Alt+I', () => {
+        const view = viewManager.getActiveView();
+        if(view.object.webContents.isDevToolsOpened()){
+            view.object.webContents.closeDevTools();
+        }else{
+            view.object.webContents.openDevTools({mode: 'detach'});
+        }
+    });
 }
 
 module.exports = {
