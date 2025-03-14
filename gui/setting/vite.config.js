@@ -11,6 +11,7 @@ import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 export default defineConfig({
   base: './',
   build: {
+    emptyOutDir: true,
     outDir: '../dist',
   },
   plugins: [
