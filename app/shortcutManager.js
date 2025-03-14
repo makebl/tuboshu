@@ -153,7 +153,7 @@ function initShortcut() {
         if(!win.isVisible()) win.show();
     });
 
-    globalShortcut.register('CommandOrControl+Alt+I', () => {
+    globalShortcut.register('CommandOrControl+Shift+I', () => {
         const view = viewManager.getActiveView();
         if(view.object.webContents.isDevToolsOpened()){
             view.object.webContents.closeDevTools();
