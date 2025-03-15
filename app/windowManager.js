@@ -1,12 +1,14 @@
-const { app, BaseWindow, View, ipcMain, clipboard, WebContentsView } = require('electron')
+const { app, BaseWindow, View, screen, ipcMain, clipboard, WebContentsView } = require('electron')
 const viewManager = require('./viewManager');
 const lokiManager = require('./lokiManager');
 const eventManager = require('./eventManager');
 const CONS = require('./constants');
 
+let isAdjusting = false;
 class WindowManager{
 
     resizeTimer = null;
+    moveTimer = null;
     cleanupTimer = null;
     constructor() {
         this.window = null
@@ -132,6 +134,13 @@ class WindowManager{
             }, 200);
         })
 
+        this.window.on('move', () => {
+            if (this.moveTimer) clearTimeout(this.moveTimer);
+            this.moveTimer = setTimeout(() => {
+                this.handleMove();
+            }, 200);
+        });
+
         this.window.on('focus', () => {
             this.handleResize();
             console.log('focus...')
@@ -149,6 +158,8 @@ class WindowManager{
         this.window.on('closed', (e) => {
             this.window.removeAllListeners('resize');
             this.window.removeAllListeners('show');
+            this.window.removeAllListeners('focus');
+            this.window.removeAllListeners('move');
         })
     }
 
@@ -161,6 +172,42 @@ class WindowManager{
             view.object.setBounds({ x: 0, y: 0, width: width - CONS.SIZE.MENU_WIDTH, height });
         });
     }
+
+    handleMove(){
+        if (isAdjusting) return;
+        const windowBounds = this.getWindow().getBounds();
+        const display = screen.getDisplayNearestPoint(windowBounds);
+        const workArea = display.workArea;
+        const scaleFactor = display.scaleFactor;
+        const threshold = 100 * scaleFactor;
+
+        // 计算窗口到左右边缘的距离
+        const leftEdgeDistance = windowBounds.x - workArea.x;
+        const rightEdgeDistance = (workArea.x + workArea.width) - (windowBounds.x + windowBounds.width);
+        let newBounds = { ...windowBounds};
+
+        if (Math.abs(leftEdgeDistance) <= threshold || windowBounds.x < workArea.x) {
+            newBounds = {
+                x: workArea.x,
+                y: workArea.y,
+                width: workArea.width / 2,
+                height: workArea.height
+            };
+        }
+        else if (Math.abs(rightEdgeDistance) <= threshold || (windowBounds.x + windowBounds.width) > (workArea.x + workArea.width)) {
+            newBounds = {
+                x: workArea.x + workArea.width / 2,
+                y: workArea.y,
+                width: workArea.width / 2,
+                height: workArea.height
+            };
+        }
+
+        isAdjusting = true;
+        this.getWindow().setBounds(newBounds, true);
+        setImmediate(() => {isAdjusting = false;});
+    }
+
     gotoSetting(){
         this.menuView.webContents.send('auto:click', CONS.SETTING[0]);
     }
