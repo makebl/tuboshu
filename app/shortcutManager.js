@@ -46,7 +46,7 @@ function initShortcut() {
         const view = viewManager.getActiveView();
         lokiManager.then((manager) => {
             const openMenus = manager.getMenus().openMenus;
-            let idx = openMenus.findIndex(item => item.url === view.url);
+            let idx = openMenus.findIndex(item => item.name === view.name);
             if(openMenus.length === (idx+1))  idx= -1;
 
             let menuView = windowManager.getMenuView();

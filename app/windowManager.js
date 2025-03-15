@@ -179,7 +179,7 @@ class WindowManager{
         const display = screen.getDisplayNearestPoint(windowBounds);
         const workArea = display.workArea;
         const scaleFactor = display.scaleFactor;
-        const threshold = 100 * scaleFactor;
+        const threshold = 50 * scaleFactor;
 
         // 计算窗口到左右边缘的距离
         const leftEdgeDistance = windowBounds.x - workArea.x;
