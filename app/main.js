@@ -1,4 +1,4 @@
-const { app, globalShortcut} = require('electron')
+const { app, globalShortcut, BaseWindow} = require('electron')
 const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
 const shortcutManager = require('./shortcutManager');
@@ -23,9 +23,21 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
 
+app.on('activate', () => {
+  if (BaseWindow.getAllWindows().length === 0) {
+    windowManager.createWindow();
+  }
+})
+
 app.on('second-instance', () => {
   windowManager.getWindow().show();
 })
+
+app.on('render-process-gone', (event, webContents, details) => {
+  if (details.reason === 'crashed') {
+    windowManager.getMenuView().webContents.reload();
+  }
+});
 
 // 添加进程异常处理
 process.on('unhandledRejection', (error) => {

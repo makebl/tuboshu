@@ -76,7 +76,7 @@ const handleSaveForm = (element) => {
 
     <n-alert :show-icon="false">
       1.点击“新增站点”，可自行添加站点，也可修改或者删除站点；<br>
-      2.站点网址须保证唯一，不可重复。<br>
+      2.相同网站的站点多次添加，即可实现多开效果。<br>
     </n-alert>
 
     <div class="box">

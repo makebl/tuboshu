@@ -10,9 +10,9 @@ class ViewManager {
         this.views.push(view);
     }
 
-    isExist(url) {
+    isExist(name) {
         for (let i = 0; i < this.views.length; i++) {
-            if (this.views[i].url === url.toLowerCase()) {
+            if (this.views[i].name === name.toLowerCase()) {
                 return true;
             }
         }
@@ -23,10 +23,10 @@ class ViewManager {
         return this.views.find(view => view.object.getVisible());
     }
 
-    activeView(url) {
+    activeView(name) {
         const timestamp = Math.floor(Date.now() / 1000);
         for (let i = 0; i < this.views.length; i++) {
-            if (this.views[i].url === url.toLowerCase()) {
+            if (this.views[i].name === name.toLowerCase()) {
                 this.views[i].time = timestamp;
                 this.views[i].object.setVisible(true)
                 eventManager.emit('set:title', this.views[i].object.webContents.getTitle());
@@ -36,14 +36,15 @@ class ViewManager {
         }
     }
 
-    createNewView(url, tag) {
-        if (this.isExist(url)) {
-            this.activeView(url)
+    createNewView(url, name) {
+        if (this.isExist(name)) {
+            this.activeView(name)
             return null;
         }
 
         let view = new WebContentsView({
             webPreferences: {
+                partition: 'persist:'+name,
                 nodeIntegration: false,
                 contextIsolation: true,
                 preload: CONS.PATH.APP_PATH + '/app/preloadUrl.js'
@@ -70,6 +71,7 @@ class ViewManager {
         })
 
         this.addView({
+            name: name,
             url: url.toLowerCase(),
             time: Math.floor(Date.now() / 1000),
             object: view

@@ -32,6 +32,7 @@ class WindowManager{
             webPreferences: {
                 nodeIntegration: false,
                 contextIsolation: true,
+                backgroundThrottling: false
             }
         })
 
@@ -72,8 +73,8 @@ class WindowManager{
         });
 
         //跳转页面
-        ipcMain.on('reload:url', (event, url, tag) => {
-            let view = viewManager.createNewView(url, tag)
+        ipcMain.on('reload:url', (event, url, name) => {
+            let view = viewManager.createNewView(url, name)
             if(view !== null){
                 let {width, height} = this.webView.getBounds()
                 view.setBounds({ x: 0, y: 0, width, height})
@@ -132,9 +133,8 @@ class WindowManager{
         })
 
         this.window.on('focus', () => {
-            this.window.setOpacity(0.99);
-            this.window.setOpacity(1);
-            //viewManager.getActiveView().webContents.send('force:redraw');
+            this.handleResize();
+            console.log('focus...')
         });
 
         //窗口准备销毁，阻止默认事件
@@ -170,7 +170,7 @@ class WindowManager{
         lokiManager.then((manager) => {
             const urls = manager.getMenus().openMenus.map(item => item.url);
             viewManager.views = viewManager.views.filter(view => {
-                if(currentView.url === view.url) return true;
+                if(currentView.name === view.name) return true;
 
                 const notInMenu = !urls.includes(view.url);
                 const overOneHour = (Date.now() / 1000 - view.time) > 1800;

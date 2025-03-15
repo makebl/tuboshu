@@ -1,9 +1,11 @@
 const {app, nativeImage} = require("electron");
 const Loki = require('lokijs');
+const crypto = require('crypto');
 const path = require('path');
 const CONS = require('./constants');
 
 const dbPath = path.join(app.getPath('userData'),  'data.db');
+const md5Hash = (data) => crypto.createHash('md5').update(data).digest('hex');
 const processImg = (menuArray) => menuArray.map(element => {
     if(element.img.startsWith("data:")) return element;
     if(element.img.includes("preview_default")) element.img = CONS.PREVIEW_IMG;
@@ -62,6 +64,7 @@ class LokiManager {
     addSite(site) {
         const sitesCollection = this.db.getCollection('sites');
         site.order = sitesCollection.count() + 1;
+        site.name = md5Hash(site.name.trim()+""+ Date.now());
         sitesCollection.insert(site);
         this.db.saveDatabase();
     }

@@ -14,7 +14,7 @@ function updateMenu(menu, pid) {
     navBox.innerHTML="";
     menu.forEach(item => {
         const navItem = `           
-            <div class="nav-item" data-url="${item.url}" data-tag="${item.tag}">
+            <div class="nav-item" data-url="${item.url}" data-name="${item.name}">
                 <div class="logo">
                     <img src="${item.img}" alt="${item.tag}">
                 </div>
@@ -32,7 +32,7 @@ function handleNavItemClick(event) {
     while (element && element !== event.currentTarget) {
         if (element.classList.contains('nav-item')) {
             element.classList.add('highlighted');
-            window.myApi.openUrl(element.dataset.url, element.dataset.tag);
+            window.myApi.openUrl(element.dataset.url, element.dataset.name);
             break;
         }
         element = element.parentNode;
@@ -43,7 +43,7 @@ function autoNavItemClick(data) {
     const navBox = document.getElementById('nav-wrapper');
     const navItems = navBox.querySelectorAll('.nav-item');
     navItems.forEach(item => {
-        if (item.dataset.tag === data.tag) {
+        if (item.dataset.name === data.name) {
             item.classList.add('highlighted');
         } else {
             item.classList.remove('highlighted');
