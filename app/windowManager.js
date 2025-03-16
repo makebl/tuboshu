@@ -4,11 +4,10 @@ const lokiManager = require('./lokiManager');
 const eventManager = require('./eventManager');
 const CONS = require('./constants');
 
-let isAdjusting = false;
 class WindowManager{
 
+    isAdjusting = false;
     resizeTimer = null;
-    moveTimer = null;
     cleanupTimer = null;
     constructor() {
         this.window = null
@@ -126,7 +125,6 @@ class WindowManager{
 
     bindEvents(){
         // this.window.on('restore', () => {});
-
         this.window.on('resize', () => {
             if (this.resizeTimer) clearTimeout(this.resizeTimer);
             this.resizeTimer = setTimeout(() => {
@@ -135,10 +133,7 @@ class WindowManager{
         })
 
         this.window.on('move', () => {
-            if (this.moveTimer) clearTimeout(this.moveTimer);
-            this.moveTimer = setTimeout(() => {
-                this.handleMove();
-            }, 200);
+            this.handleMove();
         });
 
         this.window.on('focus', () => {
@@ -174,12 +169,12 @@ class WindowManager{
     }
 
     handleMove(){
-        if (isAdjusting) return;
+        if (this.isAdjusting) return;
         const windowBounds = this.getWindow().getBounds();
         const display = screen.getDisplayNearestPoint(windowBounds);
         const workArea = display.workArea;
         const scaleFactor = display.scaleFactor;
-        const threshold = 50 * scaleFactor;
+        const threshold = 30 * scaleFactor;
 
         // 计算窗口到左右边缘的距离
         const leftEdgeDistance = windowBounds.x - workArea.x;
@@ -187,25 +182,24 @@ class WindowManager{
         let newBounds = { ...windowBounds};
 
         if (Math.abs(leftEdgeDistance) <= threshold || windowBounds.x < workArea.x) {
-            newBounds = {
+            Object.assign(newBounds, {
                 x: workArea.x,
                 y: workArea.y,
-                width: workArea.width / 2,
                 height: workArea.height
-            };
+            });
         }
         else if (Math.abs(rightEdgeDistance) <= threshold || (windowBounds.x + windowBounds.width) > (workArea.x + workArea.width)) {
-            newBounds = {
-                x: workArea.x + workArea.width / 2,
+            Object.assign(newBounds, {
+                x: workArea.width - windowBounds.width,
                 y: workArea.y,
-                width: workArea.width / 2,
                 height: workArea.height
-            };
+            });
         }
-
-        isAdjusting = true;
-        this.getWindow().setBounds(newBounds, true);
-        setImmediate(() => {isAdjusting = false;});
+        if (JSON.stringify(newBounds) !== JSON.stringify(windowBounds)) {
+            this.isAdjusting = true;
+            this.getWindow().setBounds(newBounds, true);
+            this.isAdjusting = false;
+        }
     }
 
     gotoSetting(){
