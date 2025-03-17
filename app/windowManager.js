@@ -69,6 +69,33 @@ class WindowManager{
     }
 
     bindIpcMain(){
+
+        //获取侧边栏配置
+        ipcMain.handle('get:menu', async (event, ...args) => {
+            const manager = await lokiManager;
+            return manager.getMenus()
+        });
+
+        ipcMain.handle('get:shortcuts', async (event, ...args) => {
+            const manager = await lokiManager;
+            return manager.getShortcuts()
+        });
+
+        ipcMain.handle('update:shortcut', async (event, shortcut) => {
+            const manager = await lokiManager;
+            const oldShortcut = manager.getShortcut(shortcut.name);
+
+            const data = {shortcut, oldShortcut}
+            const result = await  eventManager.send('replace:shortcut', data)
+
+            if(result === true){
+                manager.updateShortcut(shortcut, oldShortcut);
+                return {code:0, data:shortcut, msg:"快捷键更改成功！"}
+            }else{
+                return {code:1, data:oldShortcut, msg:"快捷键被占用,更改失败！"};
+            }
+        });
+
         eventManager.on('set:title', (data) => {
             this.window.setTitle(data);
         });
@@ -86,12 +113,6 @@ class WindowManager{
         //右键直接赋值文本
         ipcMain.on('copy:text', (event, text) => {
             clipboard.writeText(text);
-        });
-
-        //获取侧边栏配置
-        ipcMain.handle('get:menu', async (event, ...args) => {
-            const manager = await lokiManager;
-            return manager.getMenus()
         });
 
         //更新左边导航栏

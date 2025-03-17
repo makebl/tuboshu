@@ -24,7 +24,7 @@ function openWebsite(){
 
 function autoClickSettings(){
     let win = windowManager.getWindow();
-    win.isVisible() ? win.hide():win.show();
+    if(!win.isVisible()) win.show();
 
     let menuView = windowManager.getMenuView();
     menuView.webContents.send('auto:click', CONS.SETTING[0]);
@@ -44,5 +44,6 @@ module.exports = {
     createTray,
     toggleWindow,
     reallyQuitApp,
+    autoClickSettings,
     openWebsite
 };

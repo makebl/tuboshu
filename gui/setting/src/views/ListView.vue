@@ -108,7 +108,7 @@ const handleSaveForm = (element) => {
 .box{
   margin-top: 1rem;
   flex: 1;
-  border: 1px solid var(--color-border);
+  border: 1px solid #efeff5;
 }
 
 .box-card{
@@ -123,7 +123,7 @@ const handleSaveForm = (element) => {
 .box-title{
   font-size: 15px;
   padding: 0.5em;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid #efeff5;
   background-color: var(--color-background-mute);
 }
 </style>

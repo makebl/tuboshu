@@ -1,4 +1,4 @@
-const { app, globalShortcut, BaseWindow} = require('electron')
+const { app, BaseWindow} = require('electron')
 const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
 const shortcutManager = require('./shortcutManager');
@@ -11,12 +11,12 @@ app.whenReady().then(() => {
   if (!singleLock) return app.quit();
   windowManager.createWindow();
   trayManager.createTray();
-  shortcutManager.initShortcut();
+  shortcutManager.initShortcuts();
 })
 
 
 app.on('will-quit', () => {
-  globalShortcut.unregisterAll();
+  shortcutManager.unregisterAll();
 })
 
 app.on('window-all-closed', () => {

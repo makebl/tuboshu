@@ -16,6 +16,10 @@
         <n-tag :bordered="false" type="info" size="small">微信号:</n-tag>upsort<br>
       </n-space>
       <n-space size="small" style="margin-top: 10px">
+        <n-tag :bordered="false" type="info" size="small">GitHub:</n-tag>
+        <a target="_blank" href="https://github.com/deepshit2025/tuboshu/releases">最新版本</a><br>
+      </n-space>
+      <n-space size="small" style="margin-top: 10px">
         <n-tag :bordered="false" type="info" size="small">Telegram:</n-tag>
         <a target="_blank" href="https://t.me/shaziaicom">https://t.me/shaziaicom</a><br>
       </n-space>

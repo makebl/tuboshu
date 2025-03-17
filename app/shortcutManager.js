@@ -3,6 +3,7 @@ const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
 const viewManager = require('./viewManager');
 const lokiManager = require('./lokiManager');
+const eventManager = require('./eventManager');
 const CONS = require('./constants');
 
 // 在 Electron 中，你可以通过简单的字符串组合来定义一系列的快捷键。
@@ -23,26 +24,51 @@ const CONS = require('./constants');
 // 关闭当前窗口：CommandOrControl+W
 // 你也可以组合多个修饰键：
 // 示例：CommandOrControl+Shift+Option+J (在 macOS 上 Option 是 Alt 键)
-function initShortcut() {
 
-    //显示/隐藏
-    globalShortcut.register('CommandOrControl+H', () => {
-        trayManager.toggleWindow();
-    });
+class ShortcutManager{
 
-    //真实退出
-    globalShortcut.register('CommandOrControl+Q', () => {
+    constructor() {}
+
+    initShortcuts(){
+        lokiManager.then((manager) => {
+            manager.getShortcuts().forEach((shortcut) => {
+                if(!globalShortcut.isRegistered(shortcut.cmd)){
+                    globalShortcut.register(shortcut.cmd, this[shortcut.name].bind(this))
+                }
+            })
+        })
+        eventManager.on('replace:shortcut', (data, resolve) => {
+            const res =this.updateShortcut(data.shortcut, data.oldShortcut);
+            resolve(res);
+        });
+    }
+
+    updateShortcut(shortcut, oldShortcut){
+        if(globalShortcut.isRegistered(shortcut.cmd)){
+            return false;
+        }
+        globalShortcut.unregister(oldShortcut.cmd)
+        globalShortcut.register(shortcut.cmd, this[shortcut.name].bind(this))
+        return true;
+    }
+
+    softwareExit(){
         trayManager.reallyQuitApp();
-    });
+    }
 
-    //刷新当前页面
-    globalShortcut.register('CommandOrControl+R', () => {
-        const view = viewManager.getActiveView();
-        if(view) view.object.webContents.reload();
-    });
+    softwareWindowVisibilityController(){
+        trayManager.toggleWindow();
+    }
+    softwareSetting(){
+        trayManager.autoClickSettings()
+    }
 
-    //循环选择站点
-    globalShortcut.register('CommandOrControl+Tab', () => {
+    windowTopmostToggle(){
+        let win = windowManager.getWindow();
+        win.isAlwaysOnTop() ? win.setAlwaysOnTop(false) : win.setAlwaysOnTop(true);
+    }
+
+    softwareSiteSwitch(){
         const view = viewManager.getActiveView();
         lokiManager.then((manager) => {
             const openMenus = manager.getMenus().openMenus;
@@ -52,16 +78,9 @@ function initShortcut() {
             let menuView = windowManager.getMenuView();
             menuView.webContents.send('auto:click', openMenus[idx+1]);
         })
-    });
+    }
 
-    //是否置顶
-    globalShortcut.register('CommandOrControl+T', () => {
-        let win = windowManager.getWindow();
-        win.isAlwaysOnTop() ? win.setAlwaysOnTop(false) : win.setAlwaysOnTop(true);
-    });
-
-    //复原显示
-    globalShortcut.register('CommandOrControl+O', () => {
+    restoreDefaultWindow(){
         let win = windowManager.getWindow()
         const [width, height] = win.getSize();
 
@@ -73,96 +92,50 @@ function initShortcut() {
             win.setSize(CONS.SIZE.WIDTH, CONS.SIZE.HEIGHT, true);
             win.center();
         }
-    });
+    }
 
-    //最小化窗口
-    globalShortcut.register('CommandOrControl+[', () => {
+    currentPageRefresher(){
+        const view = viewManager.getActiveView();
+        if(view) view.object.webContents.reload();
+    }
+
+    windowMinimize(){
         let win = windowManager.getWindow();
         if(win.isMaximized()) win.unmaximize();
         win.isMinimized() ? win.restore() : win.minimize();
-    });
+    }
 
-    //最大化窗口
-    globalShortcut.register('CommandOrControl+]', () => {
+    windowMaximizer(){
         let win = windowManager.getWindow();
         win.isMaximized() ? win.restore() : win.maximize();
-    });
+    }
 
-    //屏幕左侧显示
-    globalShortcut.register('CommandOrControl+,', () => {
+    leftScreenMiniWindow(){
         const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-
         let win = windowManager.getWindow();
-        if(win.isMaximized()) win.unmaximize();
-        win.setSize(width/2, height+8, true);
-        win.setPosition(0, 0, true)
-        if(!win.isVisible()) win.show();
-    });
 
-    //屏幕右侧显示
-    globalShortcut.register('CommandOrControl+.', () => {
+        if(win.isMaximized()) win.unmaximize();
+        if(!win.isVisible()) win.show();
+        win.setBounds({x:0, y:0, width:width/3, height:height})
+    }
+
+    rightScreenMiniWindow(){
         const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-
         let win = windowManager.getWindow();
+
         if(win.isMaximized()) win.unmaximize();
-        win.setSize(width/2, height+8, true);
-        win.setPosition(width/2, 0, true);
         if(!win.isVisible()) win.show();
-    });
+        let winWidth = width/3;
+        win.setBounds({x:width-winWidth, y:0, width:winWidth, height:height})
+    }
 
-    //屏幕右侧显示
-    globalShortcut.register('CommandOrControl+Right', () => {
-        const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+    unregisterAll(){
+        this.destroy();
+    }
 
-        let win = windowManager.getWindow();
-        if(win.isMaximized()) win.unmaximize();
-        win.setSize(width/3, height+8, true);
-        win.setPosition((width - (width / 3)+8), 0, true)
-        if(!win.isVisible()) win.show();
-    });
-
-    //屏幕左侧显示
-    globalShortcut.register('CommandOrControl+Left', () => {
-        const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-
-        let win = windowManager.getWindow();
-        if(win.isMaximized()) win.unmaximize();
-        win.setSize(width/3, height+8, true);
-        win.setPosition(-8, 0, true)
-        if(!win.isVisible()) win.show();
-    });
-
-    //屏幕左侧显示
-    globalShortcut.register('CommandOrControl+Up', () => {
-        const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-
-        let win = windowManager.getWindow();
-        if(win.isMaximized()) win.unmaximize();
-        win.setSize(width, height/2, true);
-        win.setPosition(0, 0, true);
-        if(!win.isVisible()) win.show();
-    });
-
-    globalShortcut.register('CommandOrControl+Down', () => {
-        const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-
-        let win = windowManager.getWindow();
-        if(win.isMaximized()) win.unmaximize();
-        win.setSize(width, height/2, true);
-        win.setPosition(0, height/2, true);
-        if(!win.isVisible()) win.show();
-    });
-
-    globalShortcut.register('CommandOrControl+Shift+I', () => {
-        const view = viewManager.getActiveView();
-        if(view.object.webContents.isDevToolsOpened()){
-            view.object.webContents.closeDevTools();
-        }else{
-            view.object.webContents.openDevTools({mode: 'detach'});
-        }
-    });
+    destroy(){
+        globalShortcut.unregisterAll();
+    }
 }
 
-module.exports = {
-    initShortcut
-}
+module.exports = new ShortcutManager();

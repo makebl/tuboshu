@@ -120,5 +120,73 @@ module.exports = Object.freeze({
             isOpen:false,
             order: 12,
         }
+    ],
+    SHORTCUT:[
+        {
+            tag:  "退出软件",
+            name: "softwareExit",
+            cmd: "CommandOrControl+Q",
+            isOpen:true,
+        },
+        {
+            tag: "隐藏/显示 软件窗口",
+            name: "softwareWindowVisibilityController",
+            cmd: "CommandOrControl+H",
+            isOpen:true,
+        },
+        {
+            tag: "打开软件设置",
+            name: "softwareSetting",
+            cmd: "CommandOrControl+S",
+            isOpen:true,
+        },
+        {
+            tag: "选择下一站点",
+            name: "softwareSiteSwitch",
+            cmd: "CommandOrControl+Tab",
+            isOpen:true,
+        },
+        {
+            tag: "取消/设置 窗口置顶",
+            name: "windowTopmostToggle",
+            cmd: "CommandOrControl+T",
+            isOpen:true,
+        },
+        {
+            tag: "恢复默认窗口",
+            name: "restoreDefaultWindow",
+            cmd: "CommandOrControl+O",
+            isOpen:true,
+        },
+        {
+            tag: "刷新当前页面",
+            name: "currentPageRefresher",
+            cmd: "CommandOrControl+R",
+            isOpen:true,
+        },
+        {
+            tag: "最小化窗口",
+            name: "windowMinimize",
+            cmd: "CommandOrControl+[",
+            isOpen:true,
+        },
+        {
+            tag: "最大化窗口",
+            name: "windowMaximizer",
+            cmd: "CommandOrControl+]",
+            isOpen:true,
+        },
+        {
+            tag: "屏幕左边小窗",
+            name: "leftScreenMiniWindow",
+            cmd: "CommandOrControl+Left",
+            isOpen:true,
+        },
+        {
+            tag: "屏幕右边小窗",
+            name: "rightScreenMiniWindow",
+            cmd: "CommandOrControl+Right",
+            isOpen:true,
+        }
     ]
 });

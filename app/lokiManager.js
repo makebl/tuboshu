@@ -47,6 +47,15 @@ class LokiManager {
                 this.db.saveDatabase();
             }
         }
+
+        if (!this.db.getCollection('shortcuts')) {
+            const sitesCollection = this.db.addCollection('shortcuts', { indices: ['name'], unique: ['name'] });
+
+            if (sitesCollection.count() === 0) {
+                sitesCollection.insert(CONS.SHORTCUT);
+                this.db.saveDatabase();
+            }
+        }
     }
 
     // 方法无需再等待，因为初始化已完成
@@ -96,6 +105,22 @@ class LokiManager {
             closeMenus: processImg(sites.filter(site => !site.isOpen)),
             setMenus : processImg(CONS.SETTING)
         }
+    }
+
+    getShortcuts() {
+        const shortcutCollection = this.db.getCollection('shortcuts');
+        return shortcutCollection.find({});
+    }
+
+    getShortcut(name) {
+        const shortcutCollection = this.db.getCollection('shortcuts');
+        return shortcutCollection.findOne({name: name});
+    }
+
+    updateShortcut(shortcut) {
+        const shortcutCollection = this.db.getCollection('shortcuts');
+        shortcutCollection.findAndUpdate({name: shortcut.name}, (doc)=>{Object.assign(doc, shortcut)});
+        return this.db.saveDatabase();
     }
 }
 

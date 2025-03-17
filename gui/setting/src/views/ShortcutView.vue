@@ -1,4 +1,6 @@
 <script setup>
+import {onMounted} from "vue";
+
 const columns = [
   {
     title: "快捷键",
@@ -50,6 +52,11 @@ const data = [
     desc: "刷新当前页面"
   },
 ];
+
+const list = ref([]);
+onMounted(async () => {
+  list.value = await window.myApi.getShortcuts();
+});
 </script>
 
 <template>
@@ -61,17 +68,18 @@ const data = [
     <n-alert :show-icon="false">
       1.快捷键不区分大小写,先按住Ctrl键，再按其它快捷键；<br>
       2.在macOS系统：Ctrl === Command键，Alt === Option键；<br>
+      3.自定义快捷键时，先获取焦点，然后在输入框中按其它快捷键；<br>
     </n-alert>
 
     <div class="box">
-      <n-space vertical :size="12">
-        <n-data-table
-            size="small"
-            :columns="columns"
-            :data="data"
-        />
-      </n-space>
-
+      <div class="title">
+        <div style="width: 200px;"> 功能 </div>
+        <div style="width: 200px;"> 快捷键 </div>
+        <div> 自定义 </div>
+      </div>
+      <template v-for="element in list">
+        <ShortItem :element="element" />
+      </template>
     </div>
   </div>
 </template>
@@ -79,5 +87,17 @@ const data = [
 <style scoped>
 .box{
   margin-top: 1rem;
+  border: 1px solid #efeff5;
+}
+
+.title{
+  font-size: 15px;
+  padding: 0.5em;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-background-mute);
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-items: center;
 }
 </style>
