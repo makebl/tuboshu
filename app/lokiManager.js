@@ -109,7 +109,7 @@ class LokiManager {
 
     getShortcuts() {
         const shortcutCollection = this.db.getCollection('shortcuts');
-        return shortcutCollection.find({});
+        return shortcutCollection.chain().find({}).simplesort('isOpen', { desc: true }).data();
     }
 
     getShortcut(name) {

@@ -1,4 +1,4 @@
-const { globalShortcut, screen} = require('electron');
+const { app, globalShortcut, screen} = require('electron');
 const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
 const viewManager = require('./viewManager');
@@ -32,17 +32,42 @@ class ShortcutManager{
     initShortcuts(){
         lokiManager.then((manager) => {
             manager.getShortcuts().forEach((shortcut) => {
+                if(shortcut.isOpen === false){
+                    return;
+                }
                 if(!globalShortcut.isRegistered(shortcut.cmd)){
                     globalShortcut.register(shortcut.cmd, this[shortcut.name].bind(this))
                 }
             })
         })
         eventManager.on('replace:shortcut', (data, resolve) => {
-            const res =this.updateShortcut(data.shortcut, data.oldShortcut);
-            resolve(res);
+            if(data.shortcut.flag === true){
+                const res = this.isDisableShortcuts(data.shortcut)
+                delete data.shortcut.flag;
+                resolve(res);
+            }else{
+                const res =this.updateShortcut(data.shortcut, data.oldShortcut);
+                delete data.shortcut.flag;
+                resolve(res);
+            }
         });
-
         this.openDevTools();
+        this.forceSystemExit();
+    }
+
+    isDisableShortcuts(shortcut){
+        //禁用快捷键
+        if((shortcut.isOpen === false) && globalShortcut.isRegistered(shortcut.cmd)){
+            globalShortcut.unregister(shortcut.cmd)
+            return true;
+        }
+
+        //启用快捷键
+        if(shortcut.isOpen === true && !globalShortcut.isRegistered(shortcut.cmd)){
+            globalShortcut.register(shortcut.cmd, this[shortcut.name].bind(this))
+            return true;
+        }
+        return true;
     }
 
     updateShortcut(shortcut, oldShortcut){
@@ -139,6 +164,12 @@ class ShortcutManager{
             }else{
                 view.object.webContents.openDevTools({mode: 'detach'});
             }
+        });
+    }
+
+    forceSystemExit(){
+        globalShortcut.register('CommandOrControl+Shift+Q', () => {
+            app.exit()
         });
     }
 

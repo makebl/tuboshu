@@ -20,11 +20,10 @@ const menuOptions = [
     label: () => h(RouterLink, {to: {name: 'feedback'}}, { default: () => '使用反馈' }),
     key: 'feedback',
   },
-
-  // {
-  //   label: () => h(RouterLink, {to: {name: 'plan'}}, { default: () => '更新计划' }),
-  //   key: 'plan',
-  // }
+  {
+    label: () => h(RouterLink, {to: {name: 'plan'}}, { default: () => '版本信息' }),
+    key: 'plan',
+  }
 ]
 function handleUpdateValue(key, item){
   console.log('update value', key, item)

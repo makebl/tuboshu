@@ -86,15 +86,23 @@ class WindowManager{
             const oldShortcut = manager.getShortcut(shortcut.name);
 
             const data = {shortcut, oldShortcut}
-            const result = await  eventManager.send('replace:shortcut', data)
+            const result = await eventManager.send('replace:shortcut', data)
 
             if(result === true){
-                manager.updateShortcut(shortcut, oldShortcut);
-                return {code:0, data:shortcut, msg:"快捷键更改成功！"}
+                manager.updateShortcut(shortcut);
+                return {code:0, data:shortcut, msg:"操作成功！"}
             }else{
-                return {code:1, data:oldShortcut, msg:"快捷键被占用,更改失败！"};
+                return {code:1, data:oldShortcut, msg:"操作失败！"};
             }
         });
+
+        ipcMain.handle('get:version', () => {
+           return {
+               version: app.getVersion(),
+               electron: process.versions.electron,
+               chrome: process.versions.chrome
+           }
+        })
 
         eventManager.on('set:title', (data) => {
             this.window.setTitle(data);
@@ -192,7 +200,12 @@ class WindowManager{
     handleMove(){
         if (this.isAdjusting) return;
         const windowBounds = this.getWindow().getBounds();
-        const display = screen.getDisplayNearestPoint(windowBounds);
+        const centerPoint = {
+            x: windowBounds.x + windowBounds.width / 2,
+            y: windowBounds.y + windowBounds.height / 2
+        };
+
+        const display = screen.getDisplayNearestPoint(centerPoint);
         const workArea = display.workArea;
         const scaleFactor = display.scaleFactor;
         const threshold = 30 * scaleFactor;
@@ -211,7 +224,7 @@ class WindowManager{
         }
         else if (Math.abs(rightEdgeDistance) <= threshold) {
             Object.assign(newBounds, {
-                x: workArea.width - windowBounds.width,
+                x: workArea.x + workArea.width - windowBounds.width,
                 y: workArea.y,
                 height: workArea.height
             });

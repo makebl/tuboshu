@@ -12,12 +12,6 @@ const selectOptions = ref([
 const cmd = props.element.cmd.split('+')
 const vleft = ref(cmd[0])
 const vright = ref(cmd[1])
-const cmdName = computed(() => {
-  if (vleft.value === 'CommandOrControl') {
-    return 'Ctrl' + ' + ' + vright.value
-  }
-  return vleft.value + '+' + vright.value
-})
 
 const handleUpdateValue = (val)=>{
   let cmd =[val, vright.value].join("+")
@@ -28,14 +22,11 @@ const handleKeydown = (e)=>{
   let tmpKey = vright.value
   e.preventDefault()
   if (['Control', 'Shift', 'Alt'].includes(e.key)) return
-  if (e.key === ' '){
-    tmpKey = 'Space'
-  }else{
-    tmpKey = capitalize(e.key)
-  }
+
+  tmpKey = (e.key === ' ') ? 'Space' : capitalize(e.key)
   tmpKey = tmpKey.replace(/^Arrow/, '')
   let cmd =[vleft.value, tmpKey].join("+")
-  let short = Object.assign(toRaw(props.element), { cmd: cmd});
+  let short = Object.assign(toRaw(props.element), { cmd: cmd, flag:false});
   sendShortcut(short);
 }
 
@@ -57,12 +48,17 @@ const sendShortcut = (shortcut) => {
   })
 }
 
+const changeSwitch = (val)=>{
+  let cmd =[vleft.value, vright.value].join("+")
+  let short = Object.assign(toRaw(props.element), { cmd:cmd, isOpen:val, flag:true});
+  sendShortcut(short);
+}
+
 </script>
 
 <template>
   <div class="wrap">
-    <div style="width: 200px;"> {{ element.tag }}</div>
-    <div style="width: 200px;">{{ cmdName }}</div>
+    <div style="width: 250px;"> {{ element.tag }}</div>
     <div>
       <n-input-group>
         <n-select
@@ -81,6 +77,16 @@ const sendShortcut = (shortcut) => {
         />
       </n-input-group>
     </div>
+    <div class="switch">
+      <n-switch size="medium" v-model:value="element.isOpen" @update:value="changeSwitch" style="font-size:12px;" >
+        <template #checked>
+          开启
+        </template>
+        <template #unchecked>
+          禁用
+        </template>
+      </n-switch>
+    </div>
   </div>
 </template>
 
@@ -96,7 +102,14 @@ const sendShortcut = (shortcut) => {
   border-bottom: 1px solid #efeff5;
 }
 .wrap:hover {
-  background-color: #fefefe;
+  background-color: #f0f0f0;
 }
 
+.switch{
+  text-align: center;
+  vertical-align: center;
+  width: 100px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
 </style>

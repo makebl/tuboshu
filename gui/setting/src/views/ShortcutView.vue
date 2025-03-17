@@ -73,9 +73,9 @@ onMounted(async () => {
 
     <div class="box">
       <div class="title">
-        <div style="width: 200px;"> 功能 </div>
-        <div style="width: 200px;"> 快捷键 </div>
-        <div> 自定义 </div>
+        <div style="width:250px;"> 功能描述 </div>
+        <div style="width: 200px;"> 自定义快捷键 </div>
+        <div class="switch"> 是否禁用 </div>
       </div>
       <template v-for="element in list">
         <ShortItem :element="element" />
@@ -99,5 +99,10 @@ onMounted(async () => {
   justify-content: flex-start;
   flex-wrap: wrap;
   align-items: center;
+}
+.switch{
+  margin-left: auto;
+  width: 100px;
+  text-align: center;
 }
 </style>
