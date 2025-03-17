@@ -41,6 +41,8 @@ class ShortcutManager{
             const res =this.updateShortcut(data.shortcut, data.oldShortcut);
             resolve(res);
         });
+
+        this.openDevTools();
     }
 
     updateShortcut(shortcut, oldShortcut){
@@ -127,6 +129,17 @@ class ShortcutManager{
         if(!win.isVisible()) win.show();
         let winWidth = width/3;
         win.setBounds({x:width-winWidth, y:0, width:winWidth, height:height})
+    }
+
+    openDevTools(){
+        globalShortcut.register('CommandOrControl+Shift+I', () => {
+            const view = viewManager.getActiveView();
+            if(view.object.webContents.isDevToolsOpened()){
+                view.object.webContents.closeDevTools();
+            }else{
+                view.object.webContents.openDevTools({mode: 'detach'});
+            }
+        });
     }
 
     unregisterAll(){

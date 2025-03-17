@@ -202,14 +202,14 @@ class WindowManager{
         const rightEdgeDistance = (workArea.x + workArea.width) - (windowBounds.x + windowBounds.width);
         let newBounds = { ...windowBounds};
 
-        if (Math.abs(leftEdgeDistance) <= threshold || windowBounds.x < workArea.x) {
+        if (Math.abs(leftEdgeDistance) <= threshold) {
             Object.assign(newBounds, {
                 x: workArea.x,
                 y: workArea.y,
                 height: workArea.height
             });
         }
-        else if (Math.abs(rightEdgeDistance) <= threshold || (windowBounds.x + windowBounds.width) > (workArea.x + workArea.width)) {
+        else if (Math.abs(rightEdgeDistance) <= threshold) {
             Object.assign(newBounds, {
                 x: workArea.width - windowBounds.width,
                 y: workArea.y,
@@ -235,7 +235,7 @@ class WindowManager{
                 if(currentView.name === view.name) return true;
 
                 const notInMenu = !urls.includes(view.url);
-                const overOneHour = (Date.now() / 1000 - view.time) > 1800;
+                const overOneHour = (Date.now() / 1000 - view.time) > 600;
 
                 if (notInMenu || overOneHour) {
                     this.webView.removeChildView(view.object);
