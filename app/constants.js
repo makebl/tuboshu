@@ -6,6 +6,17 @@ module.exports = Object.freeze({
         WIDTH: 1024,
         MENU_WIDTH: 50
     },
+    CUSTOMIZATION: {
+        // 默认窗口大小
+        DEFAULT_WINDOW_SIZE: {
+            width: 1024,
+            height: 768,
+        },
+
+        //是否开启边缘吸附功能
+        IS_EDGE_SNAP_ENABLED: 1,
+
+    },
     ERROR_MESSAGES: {
         ERROR: 'connection failed'
     }

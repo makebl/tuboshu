@@ -1,4 +1,4 @@
-const { WebContentsView} = require('electron')
+const { WebContentsView, shell, session} = require('electron')
 const eventManager = require('./eventManager');
 const lokiManager = require('./lokiManager');
 const CONS = require('./constants');
@@ -59,41 +59,59 @@ class ViewManager {
         })
     }
 
+    async setProxy(mySession, name) {
+        const manager = await lokiManager;
+        const site = manager.getSite(name);
+        if(site && Object.hasOwn(site,'proxy') && site.proxy.length > 10){
+            mySession.setProxy({
+                proxyRules: site.proxy,
+            });
+        }
+    }
+
     createNewView(url, name) {
+
         if (this.isExist(name)) {
             this.activeView(name)
             return null;
         }
 
+        const partitionName = 'persist:' + name;
+        const mySession = session.fromPartition(partitionName);
+
         let view = new WebContentsView({
             webPreferences: {
-                partition: 'persist:'+name,
+                partition: partitionName,
                 nodeIntegration: false,
                 contextIsolation: true,
                 preload: CONS.PATH.APP_PATH + '/app/preloadUrl.js'
             }})
 
-        if(url.startsWith("gui/")){
+        if(url.startsWith("http")){
+            this.injectJsCode(view, name);
+            this.setProxy(mySession, name).then(()=>{
+                view.webContents.loadURL(url).then(()=>{
+                    eventManager.emit('set:title', view.webContents.getTitle());
+                }).catch(e => {
+                    view.webContents.loadFile("gui/error.html").finally()
+                })
+            });
+        }else{
             view.webContents.loadFile(url).then(() => {
                 eventManager.emit('set:title', view.webContents.getTitle());
             })
-        }else{
-
-            this.injectJsCode(view, name);
-
-            view.webContents.loadURL(url).then(()=>{
-                eventManager.emit('set:title', view.webContents.getTitle());
-            }).catch(e => {
-                view.webContents.loadFile("gui/error.html").then(r => {})
-            })
         }
 
-        //view.webContents.openDevTools();
-        view.webContents.setWindowOpenHandler(({ url }) => {
-            return {
-                action: 'allow',
-                overrideBrowserWindowOptions: {autoHideMenuBar:true}
-            }
+
+        // //view.webContents.openDevTools();
+        view.webContents.setWindowOpenHandler((details) => {
+            // return {
+            //     action: 'allow',
+            //     overrideBrowserWindowOptions: {autoHideMenuBar:true}
+            // }
+
+            shell.openExternal(details.url).finally();
+            return { action: 'deny' };
         })
 
         this.addView({

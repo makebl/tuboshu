@@ -6,7 +6,7 @@ const props = defineProps({
 })
 
 const uploader = ref(null)
-const formData = reactive({tag: '', url: ''})
+const formData = reactive({tag: '', url: '', proxy:''})
 watch(() => props.element, (newVal) => {
   Object.assign(formData, newVal || {})
 }, { immediate: true })
@@ -52,6 +52,21 @@ const handleSave = () => {
       <div class="flex-row" style="margin-top: 30px">
         <n-input type="text" size="large" placeholder="网页地址 https://" v-model:value="formData.url" clearable />
       </div>
+
+      <div class="flex-row" style="margin-top: 30px">
+        <n-input type="text" size="large" placeholder="设置代理 (非必要勿填)" v-model:value="formData.proxy" clearable />
+      </div>
+
+      <br>
+      <n-alert :show-icon="false">
+        <p style="color:#888;">
+          代理格式规则:<br>
+          HTTP/HTTPS 代理：http://host:port <br>
+          SOCKS 代理：socks://host:port<br>
+          SOCKS5 代理：socks5://host:port<br>
+          支持认证：socks5://user:password@host:port<br>
+        </p>
+      </n-alert>
 
       <template #footer>
         <div class="flex-footer">

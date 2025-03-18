@@ -16,11 +16,14 @@ onMounted(async () => {
 });
 
 const addNew = () => {
-  ele.value = {tag: '', url: '', name:'', isOpen: true, isNew: true};
+  ele.value = {tag: '', url: '', name:'', proxy:'', isOpen: true, isNew: true};
   show.value = true;
 };
 
 const handleEdit = (element) => {
+  if(!Object.hasOwn(element, 'proxy')){
+    element.proxy = "";
+  }
   element.isNew = false;
   ele.value = JSON.parse(JSON.stringify(element));
   show.value = true;

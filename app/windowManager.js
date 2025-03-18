@@ -70,7 +70,6 @@ class WindowManager{
     }
 
     bindIpcMain(){
-
         //获取侧边栏配置
         ipcMain.handle('get:menu', async (event, ...args) => {
             const manager = await lokiManager;
@@ -80,6 +79,11 @@ class WindowManager{
         ipcMain.handle('get:shortcuts', async (event, ...args) => {
             const manager = await lokiManager;
             return manager.getShortcuts()
+        });
+
+        ipcMain.handle('get:custom', async (event, ...args) => {
+            const manager = await lokiManager;
+            return manager.getCustomization('customization')
         });
 
         ipcMain.handle('update:shortcut', async (event, shortcut) => {
@@ -153,6 +157,11 @@ class WindowManager{
             this.menuView.webContents.reload();
             this.closeAllSites();
         });
+
+        ipcMain.on('update:custom', async (event, custom) => {
+            const manager = await lokiManager;
+            manager.updateCustomization(custom)
+        })
     }
 
     bindEvents(){

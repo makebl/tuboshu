@@ -56,6 +56,14 @@ class LokiManager {
                 this.db.saveDatabase();
             }
         }
+
+        if (!this.db.getCollection('setting')) {
+            const sitesCollection = this.db.addCollection('setting', { indices: ['name'], unique: ['name'] });
+            if (sitesCollection.count() === 0) {
+                sitesCollection.insert({name:'customization', data:CONS.CUSTOMIZATION});
+                this.db.saveDatabase();
+            }
+        }
     }
 
     // 方法无需再等待，因为初始化已完成
@@ -125,6 +133,17 @@ class LokiManager {
     updateShortcut(shortcut) {
         const shortcutCollection = this.db.getCollection('shortcuts');
         shortcutCollection.findAndUpdate({name: shortcut.name}, (doc)=>{Object.assign(doc, shortcut)});
+        return this.db.saveDatabase();
+    }
+
+    getCustomization(name){
+        const settingCollection = this.db.getCollection('setting');
+        return settingCollection.findOne({name: name});
+    }
+
+    updateCustomization(customization) {
+        const settingCollection = this.db.getCollection('setting');
+        settingCollection.findAndUpdate({name: customization.name}, (doc)=>{Object.assign(doc, customization)});
         return this.db.saveDatabase();
     }
 }
