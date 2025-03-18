@@ -70,6 +70,11 @@ class LokiManager {
         this.db.saveDatabase();
     }
 
+    getSite(name) {
+        const sitesCollection = this.db.getCollection('sites');
+        return sitesCollection.findOne({name: name});
+    }
+
     addSite(site) {
         const sitesCollection = this.db.getCollection('sites');
         site.order = sitesCollection.count() + 1;

@@ -1,4 +1,4 @@
-import{bR as v,bU as u,M as z,a5 as C,bZ as T,b_ as _,q as f,c0 as R,c1 as V,u as N,I as s,bH as o,aK as B,H as l,v as m}from"./index-Cn2uj7Bn.js";import{_ as H,a as P}from"./Space-DsRG6wpU.js";import{_ as $}from"./Tag-BgFoNfJi.js";import{t as k,N as w}from"./headers-Clqf6ylu.js";import{_ as q}from"./Alert-BLsRSrYM.js";import"./get-slot-Bk_rJcZu.js";const D=v("p",`
+import{bR as v,bU as u,M as z,a5 as C,bZ as T,b_ as _,q as f,c0 as R,c1 as V,u as N,I as s,bH as o,aK as B,H as l,v as m}from"./index-7uoXnBjj.js";import{_ as H,a as P}from"./Space-wHfzP7UF.js";import{_ as $}from"./Tag-BGSA--Bv.js";import{t as k,N as w}from"./headers-Cp5aqC6R.js";import{_ as q}from"./Alert-Bc_O0E-M.js";import"./get-slot-Bk_rJcZu.js";const D=v("p",`
  box-sizing: border-box;
  transition: color .3s var(--n-bezier);
  margin: var(--n-margin);

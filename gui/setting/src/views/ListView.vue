@@ -1,35 +1,18 @@
 <script setup>
 import NewDrawer from "@/components/NewDrawer.vue";
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted } from 'vue';
+import JsEditorDrawer from "@/components/JsEditorDrawer.vue";
 
 const ele = ref({});
 const show = ref(false);
 const list = ref([]);
 
-const dynamicDiv = ref(null);
-const dynamicHeight = ref(0);
-const adjustHeight = () => {
-  if (!dynamicDiv.value) return;
-  const viewportHeight = window.innerHeight;
-  const divTop = dynamicDiv.value.getBoundingClientRect().top;
-  const height = Math.max(0, viewportHeight - divTop);
-  dynamicDiv.value.style.height = `${height - 20}px`;
-  dynamicHeight.value = height-20;
-};
-
+const isJsEditor = ref(false);
+const jsElement = ref({});
 
 onMounted(async () => {
-  adjustHeight();
-  window.addEventListener('resize', adjustHeight);
-  window.addEventListener('scroll', adjustHeight);
-
   const config = await window.myApi.getConfig();
   list.value = [...config.openMenus, ...config.closeMenus];
-});
-
-onUnmounted(() => {
-  window.removeEventListener('resize', adjustHeight);
-  window.removeEventListener('scroll', adjustHeight);
 });
 
 const addNew = () => {
@@ -44,7 +27,7 @@ const handleEdit = (element) => {
 };
 
 const handleRemove = (element) => {
-  const index = list.value.findIndex(item => item.url === element.url);
+  const index = list.value.findIndex(item => item.name === element.name);
   if (index !== -1) {
     list.value.splice(index, 1);
   }
@@ -66,6 +49,21 @@ const handleSaveForm = (element) => {
     })
   }
 };
+
+const handleJsEditor = (name) => {
+  const index = list.value.findIndex(item => item.name === name);
+  const objItem = list.value[index];
+  if(!Object.hasOwn(objItem, 'jsCode')) objItem.jsCode = '';
+  jsElement.value = objItem;
+  isJsEditor.value = true;
+};
+
+const handleSaveJsCode = (element) => {
+  const index = list.value.findIndex(item => item.name === element.name);
+  list.value[index] = element;
+  window.myApi.updateMenu(toRaw(element));
+};
+
 </script>
 
 <template>
@@ -90,10 +88,10 @@ const handleSaveForm = (element) => {
           新增站点
         </n-button>
       </div>
-      <div ref="dynamicDiv" class="box-card">
+      <div class="box-card" v-auto-height="{ offset: 20}">
         <div class="wrap">
           <template v-for="element in list">
-            <LinkItem :element="element" @edit="handleEdit" @remove="handleRemove" />
+            <LinkItem :element="element" @edit="handleEdit" @remove="handleRemove" @jsEditor="handleJsEditor" />
           </template>
         </div>
       </div>
@@ -101,7 +99,7 @@ const handleSaveForm = (element) => {
   </div>
 
   <NewDrawer v-model:show="show" :element="ele" @saveForm="handleSaveForm" />
-
+  <JsEditorDrawer v-model:show="isJsEditor" :element="jsElement" @saveJsCode="handleSaveJsCode" />
 </template>
 
 <style scoped>

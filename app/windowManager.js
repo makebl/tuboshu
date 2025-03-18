@@ -1,4 +1,4 @@
-const { app, BaseWindow, View, screen, ipcMain, clipboard, WebContentsView } = require('electron')
+const { app, BaseWindow, View, screen, ipcMain, clipboard, WebContentsView, Menu } = require('electron')
 const viewManager = require('./viewManager');
 const lokiManager = require('./lokiManager');
 const eventManager = require('./eventManager');
@@ -24,10 +24,12 @@ class WindowManager{
     }
 
     createWindow() {
+        const emptyMenu = Menu.buildFromTemplate([])
+        Menu.setApplicationMenu(emptyMenu)
         const win = new BaseWindow({
             width: CONS.SIZE.WIDTH,
             height: CONS.SIZE.HEIGHT,
-            autoHideMenuBar: true,
+            autoHideMenuBar: false,
             show:false,
             icon: CONS.PATH.APP_PATH+'/icon.ico',
             webPreferences: {
@@ -49,7 +51,6 @@ class WindowManager{
         menuView.setBounds({ x: 0, y: 0, width:CONS.SIZE.MENU_WIDTH, height })
         menuView.webContents.loadFile('gui/index.html').then(()=>{
             this.gotoSetting();
-            //menuView.webContents.openDevTools();
         })
 
         const webView = new View();
@@ -128,6 +129,7 @@ class WindowManager{
             const manager = await lokiManager;
             manager.updateSite(menu);
             this.menuView.webContents.reload();
+            this.closeAllSites();
         });
 
         //批量更新排序
@@ -149,6 +151,7 @@ class WindowManager{
             const manager = await lokiManager;
             manager.removeSite(menu);
             this.menuView.webContents.reload();
+            this.closeAllSites();
         });
     }
 
@@ -251,8 +254,8 @@ class WindowManager{
                 const overOneHour = (Date.now() / 1000 - view.time) > 600;
 
                 if (notInMenu || overOneHour) {
-                    this.webView.removeChildView(view.object);
                     view.object.webContents.close();
+                    this.webView.removeChildView(view.object);
                     return false;
                 }
                 return true;
@@ -262,6 +265,16 @@ class WindowManager{
         clearTimeout(this.cleanupTimer);
         this.cleanupTimer = setTimeout(() => this.uselessSiteCleaner(), 10*60*1000);
     }
+
+    closeAllSites(){
+        viewManager.views = viewManager.views.filter(view => {
+            if(view.name  === "setting") return true;
+            view.object.webContents.close();
+            this.webView.removeChildView(view.object);
+            return false;
+        })
+    }
+
     destroy() {
         clearTimeout(this.cleanupTimer);
     }

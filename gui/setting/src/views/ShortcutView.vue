@@ -1,58 +1,6 @@
 <script setup>
 import {onMounted} from "vue";
 
-const columns = [
-  {
-    title: "快捷键",
-    key: "name",
-    width: 200
-  },
-  {
-    title: "功能描述",
-    key: "desc"
-  }];
-
-const data = [
-  {
-    name: "Ctrl + Q",
-    desc: "退出软件"
-  },
-  {
-    name: "Ctrl + H",
-    desc: "隐藏/显示 软件窗口"
-  },
-
-  {
-    name: "Ctrl + T",
-    desc: "取消/设置 窗口置顶"
-  },
-  {
-    name: "Ctrl + O",
-    desc: "恢复默认窗口"
-  },
-  {
-    name: "Ctrl + [",
-    desc: "最小化窗口"
-  },
-  {
-    name: "Ctrl + ]",
-    desc: "最大化窗口"
-  },
-
-  {
-    name: "Ctrl + ,",
-    desc: "屏幕左边小窗"
-  },
-  {
-    name: "Ctrl + .",
-    desc: "屏幕右边小窗"
-  },
-  {
-    name: "Ctrl + R",
-    desc: "刷新当前页面"
-  },
-];
-
 const list = ref([]);
 onMounted(async () => {
   list.value = await window.myApi.getShortcuts();
@@ -77,9 +25,11 @@ onMounted(async () => {
         <div style="width: 200px;"> 自定义快捷键 </div>
         <div class="switch"> 是否禁用 </div>
       </div>
-      <template v-for="element in list">
-        <ShortItem :element="element" />
-      </template>
+      <div class="box-card" v-auto-height="{ offset: 20 }">
+        <template v-for="element in list">
+          <ShortItem :element="element" />
+        </template>
+      </div>
     </div>
   </div>
 </template>
@@ -88,6 +38,11 @@ onMounted(async () => {
 .box{
   margin-top: 1rem;
   border: 1px solid #efeff5;
+}
+
+.box-card{
+  overflow: hidden;
+  overflow-y: scroll;
 }
 
 .title{

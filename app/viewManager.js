@@ -1,5 +1,6 @@
 const { WebContentsView} = require('electron')
 const eventManager = require('./eventManager');
+const lokiManager = require('./lokiManager');
 const CONS = require('./constants');
 
 class ViewManager {
@@ -36,6 +37,28 @@ class ViewManager {
         }
     }
 
+    injectJsCode(view, name){
+        view.webContents.on('did-finish-load',async ()=>{
+            const manager = await lokiManager;
+            const site = manager.getSite(name);
+            if(site && Object.hasOwn(site,'jsCode') && site.jsCode.length > 0){
+                //await view.webContents.executeJavaScript(site.jsCode)
+                const sanitizedCode = JSON.stringify(site.jsCode);
+                await view.webContents.executeJavaScript(`
+                (function() {
+                    try {
+                        const scriptElement = document.createElement('script');
+                        scriptElement.textContent = ${sanitizedCode};
+                        document.body.appendChild(scriptElement);
+                    } catch (e) {
+                        console.error('Script injection failed:', e);
+                    }
+                })();
+            `);
+            }
+        })
+    }
+
     createNewView(url, name) {
         if (this.isExist(name)) {
             this.activeView(name)
@@ -55,6 +78,9 @@ class ViewManager {
                 eventManager.emit('set:title', view.webContents.getTitle());
             })
         }else{
+
+            this.injectJsCode(view, name);
+
             view.webContents.loadURL(url).then(()=>{
                 eventManager.emit('set:title', view.webContents.getTitle());
             }).catch(e => {
