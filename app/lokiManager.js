@@ -1,7 +1,7 @@
 const {app, nativeImage} = require("electron");
-const Loki = require('lokijs');
 const crypto = require('crypto');
 const path = require('path');
+const Loki = require('lokijs');
 const CONS = require('./constants');
 
 const dbPath = path.join(app.getPath('userData'),  'data.db');
@@ -60,7 +60,7 @@ class LokiManager {
         if (!this.db.getCollection('setting')) {
             const sitesCollection = this.db.addCollection('setting', { indices: ['name'], unique: ['name'] });
             if (sitesCollection.count() === 0) {
-                sitesCollection.insert({name:'customization', data:CONS.CUSTOMIZATION});
+                sitesCollection.insert(CONS.CUSTOMIZATION);
                 this.db.saveDatabase();
             }
         }

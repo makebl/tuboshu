@@ -6,21 +6,20 @@ module.exports = Object.freeze({
         WIDTH: 1024,
         MENU_WIDTH: 50
     },
-    CUSTOMIZATION: {
-        // 默认窗口大小
-        DEFAULT_WINDOW_SIZE: {
-            width: 1024,
-            height: 768,
+    CUSTOMIZATION: [
+        {
+            name: "default_window_size",
+            value: {
+                width: 1024,
+                height: 768,
+                menu_width:50
+            },
         },
-
-        //是否开启边缘吸附功能
-        IS_EDGE_SNAP_ENABLED: 1,
-
-    },
-    ERROR_MESSAGES: {
-        ERROR: 'connection failed'
-    }
-    ,
+        {
+            name: "is_edge_snap_enabled", //是否开启边缘吸附
+            value: 1,
+        }
+    ],
     PATH: {
         APP_PATH: path.join(__dirname, '..'),
     },
@@ -148,7 +147,7 @@ module.exports = Object.freeze({
         {
             tag: "打开软件设置",
             name: "softwareSetting",
-            cmd: "CommandOrControl+S",
+            cmd: "CommandOrControl+M",
             isOpen:true,
         },
         {

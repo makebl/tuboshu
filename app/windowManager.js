@@ -278,8 +278,8 @@ class WindowManager{
     closeAllSites(){
         viewManager.views = viewManager.views.filter(view => {
             if(view.name  === "setting") return true;
-            view.object.webContents.close();
             this.webView.removeChildView(view.object);
+            view.object.webContents.close();
             return false;
         })
     }

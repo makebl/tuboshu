@@ -2,6 +2,7 @@ const { WebContentsView, shell, session} = require('electron')
 const eventManager = require('./eventManager');
 const lokiManager = require('./lokiManager');
 const CONS = require('./constants');
+const userAgent = require('./disguise/userAgent');
 
 class ViewManager {
     constructor() {
@@ -87,6 +88,7 @@ class ViewManager {
                 preload: CONS.PATH.APP_PATH + '/app/preloadUrl.js'
             }})
 
+        view.webContents.setUserAgent(userAgent.ua)
         if(url.startsWith("http")){
             this.injectJsCode(view, name);
             this.setProxy(mySession, name).then(()=>{
@@ -109,9 +111,12 @@ class ViewManager {
             //     action: 'allow',
             //     overrideBrowserWindowOptions: {autoHideMenuBar:true}
             // }
-
             shell.openExternal(details.url).finally();
             return { action: 'deny' };
+        })
+
+        this.views.forEach(view => {
+           view.object.setVisible(false)
         })
 
         this.addView({
