@@ -3,17 +3,20 @@ const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
 const shortcutManager = require('./shortcutManager');
 
-const version = app.getVersion();
-app.isQuitting = false;
 // app.disableHardwareAcceleration();
+app.commandLine.appendSwitch('disable-gpu');
+app.commandLine.appendSwitch('disable-software-rasterizer');
+app.commandLine.appendSwitch('disable-extensions');
+
+app.isQuitting = false;
 const singleLock = app.requestSingleInstanceLock();
+
 app.whenReady().then(() => {
   if (!singleLock) return app.quit();
   windowManager.createWindow();
   trayManager.createTray();
   shortcutManager.initShortcuts();
 })
-
 
 app.on('will-quit', () => {
   shortcutManager.unregisterAll();

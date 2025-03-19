@@ -1,4 +1,5 @@
 const { WebContentsView, shell, session} = require('electron')
+const { Utility } = require('./utility/utility');
 const eventManager = require('./eventManager');
 const lokiManager = require('./lokiManager');
 const CONS = require('./constants');
@@ -38,38 +39,6 @@ class ViewManager {
         }
     }
 
-    injectJsCode(view, name){
-        view.webContents.on('did-finish-load',async ()=>{
-            const manager = await lokiManager;
-            const site = manager.getSite(name);
-            if(site && Object.hasOwn(site,'jsCode') && site.jsCode.length > 0){
-                //await view.webContents.executeJavaScript(site.jsCode)
-                const sanitizedCode = JSON.stringify(site.jsCode);
-                await view.webContents.executeJavaScript(`
-                (function() {
-                    try {
-                        const scriptElement = document.createElement('script');
-                        scriptElement.textContent = ${sanitizedCode};
-                        document.body.appendChild(scriptElement);
-                    } catch (e) {
-                        console.error('Script injection failed:', e);
-                    }
-                })();
-            `);
-            }
-        })
-    }
-
-    async setProxy(mySession, name) {
-        const manager = await lokiManager;
-        const site = manager.getSite(name);
-        if(site && Object.hasOwn(site,'proxy') && site.proxy.length > 10){
-            mySession.setProxy({
-                proxyRules: site.proxy,
-            });
-        }
-    }
-
     createNewView(url, name) {
 
         if (this.isExist(name)) {
@@ -80,22 +49,32 @@ class ViewManager {
         const partitionName = 'persist:' + name;
         const mySession = session.fromPartition(partitionName);
 
-        let view = new WebContentsView({
-            webPreferences: {
-                partition: partitionName,
-                nodeIntegration: false,
-                contextIsolation: true,
-                preload: CONS.PATH.APP_PATH + '/app/preloadUrl.js'
-            }})
+        const isRemoteAddr = url.toLowerCase().startsWith("http");
+        let preloadjs = isRemoteAddr ? "web.js" : "setting.js";
+        if(url.includes("localhost")) preloadjs = "setting.js"
 
-        view.webContents.setUserAgent(userAgent.ua)
-        if(url.startsWith("http")){
+        let view = new WebContentsView({webPreferences: {
+            partition: partitionName,
+            nodeIntegration: false,
+            contextIsolation: true,
+            webSecurity: true,
+            preload: CONS.PATH.APP_PATH + '/app/preload/'+ preloadjs
+        }})
+
+        view.webContents.setZoomLevel(0)
+        if(!url.includes("google")){
+            view.webContents.setUserAgent(userAgent.ua)
+        }
+
+        if(isRemoteAddr){
             this.injectJsCode(view, name);
             this.setProxy(mySession, name).then(()=>{
                 view.webContents.loadURL(url).then(()=>{
                     eventManager.emit('set:title', view.webContents.getTitle());
                 }).catch(e => {
-                    view.webContents.loadFile("gui/error.html").finally()
+                    view.webContents.loadFile("gui/error.html").finally(
+                        eventManager.emit('set:title', "加载页面异常...")
+                    )
                 })
             });
         }else{
@@ -104,13 +83,13 @@ class ViewManager {
             })
         }
 
-
-        // //view.webContents.openDevTools();
         view.webContents.setWindowOpenHandler((details) => {
-            // return {
-            //     action: 'allow',
-            //     overrideBrowserWindowOptions: {autoHideMenuBar:true}
-            // }
+
+            if(Utility.isMainDomainEqual(details.url, url)){
+                view.webContents.send('open:window', details.url)
+                return { action: 'deny' };
+            }
+
             shell.openExternal(details.url).finally();
             return { action: 'deny' };
         })
@@ -126,6 +105,29 @@ class ViewManager {
             object: view
         })
         return view
+    }
+
+
+    injectJsCode(view, name){
+        //did-finish-load
+        view.webContents.on('dom-ready',async ()=>{
+            const manager = await lokiManager;
+            const site = manager.getSite(name);
+            if(site && Object.hasOwn(site,'jsCode') && site.jsCode.length > 0){
+                const code = Utility.appendJsCode(JSON.stringify(site.jsCode))
+                await view.webContents.executeJavaScript(code);
+            }
+        })
+    }
+
+    async setProxy(mySession, name) {
+        const manager = await lokiManager;
+        const site = manager.getSite(name);
+        if(site && Object.hasOwn(site,'proxy') && site.proxy.length > 10){
+            mySession.setProxy({
+                proxyRules: site.proxy,
+            });
+        }
     }
 }
 

@@ -13,17 +13,18 @@ const menuOptions = [
     key: 'list',
   },
   {
-    label: () => h(RouterLink, {to: {name: 'shortcut'}}, { default: () => '快捷键' }),
+    label: () => h(RouterLink, {to: {name: 'shortcut'}}, { default: () => '改快捷键' }),
     key: 'shortcut',
+  },
+  {
+    label: () => h(RouterLink, {to: {name: 'set'}}, { default: () => '通用设置' }),
+    key: 'set',
   },
   {
     label: () => h(RouterLink, {to: {name: 'feedback'}}, { default: () => '使用反馈' }),
     key: 'feedback',
-  },
-  {
-    label: () => h(RouterLink, {to: {name: 'plan'}}, { default: () => '版本信息' }),
-    key: 'plan',
   }
+
 ]
 function handleUpdateValue(key, item){
   console.log('update value', key, item)

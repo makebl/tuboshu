@@ -8,7 +8,7 @@ module.exports = Object.freeze({
     },
     CUSTOMIZATION: [
         {
-            name: "default_window_size",
+            name: "defaultWindowSize",
             value: {
                 width: 1024,
                 height: 768,
@@ -16,7 +16,7 @@ module.exports = Object.freeze({
             },
         },
         {
-            name: "is_edge_snap_enabled", //是否开启边缘吸附
+            name: "isWindowEdgeAdsorption",
             value: 1,
         }
     ],

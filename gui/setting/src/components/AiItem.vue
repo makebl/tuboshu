@@ -19,13 +19,15 @@ defineProps({
 .wrap {
   width: 80px;
   height: 80px;
-  background-color: #fefefe;
+
   margin-top: 10px;
   margin-left: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   place-items: center;
+  //background-color: #fefefe;
+  background-color: var(--color-background);
   border: 1px solid var(--color-border);
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "tuboshu",
-  "version": "v1.1.11",
+  "version": "v1.2.0",
   "main": "app/main.js",
   "scripts": {
     "start": "electron .",
@@ -18,7 +18,8 @@
     "electron-builder": "^25.1.8"
   },
   "dependencies": {
-    "lokijs": "^1.5.12"
+    "lokijs": "^1.5.12",
+    "tldts": "^6.1.84"
   },
   "build": {
     "appId": "com.tuboshu.tuboshu",
@@ -50,7 +51,10 @@
     },
     "linux": {
       "category": "utility",
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "icon": "build/linux_icon.png",
       "artifactName": "${productName}-Setup-${version}-linux-${arch}.${ext}"
     },

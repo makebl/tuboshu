@@ -64,7 +64,7 @@ class UserAgent {
 
     generateStealthUserAgent() {
         const platformInfo = this.getPlatformInfo();
-        return `Mozilla/5.0 (${platformInfo}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${process.versions.chrome} Safari/537.36`;
+        return `Mozilla/5.0 ${platformInfo} AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${process.versions.chrome} Safari/537.36`;
     }
 }
 

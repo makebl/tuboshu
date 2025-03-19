@@ -1,4 +1,4 @@
-const { app, BaseWindow, View, screen, ipcMain, clipboard, WebContentsView, Menu } = require('electron')
+const { app, BaseWindow, View, screen, ipcMain, clipboard, WebContentsView, Menu, nativeTheme } = require('electron')
 const viewManager = require('./viewManager');
 const lokiManager = require('./lokiManager');
 const eventManager = require('./eventManager');
@@ -43,7 +43,7 @@ class WindowManager{
             webPreferences: {
                 nodeIntegration: false,
                 contextIsolation: true,
-                preload: CONS.PATH.APP_PATH +'/app/preload.js'
+                preload: CONS.PATH.APP_PATH +'/app/preload/navigate.js'
             }
         });
 
@@ -81,9 +81,9 @@ class WindowManager{
             return manager.getShortcuts()
         });
 
-        ipcMain.handle('get:custom', async (event, ...args) => {
+        ipcMain.handle('get:settings', async (event, ...args) => {
             const manager = await lokiManager;
-            return manager.getCustomization('customization')
+            return manager.getSettings()
         });
 
         ipcMain.handle('update:shortcut', async (event, shortcut) => {
@@ -128,6 +128,19 @@ class WindowManager{
             clipboard.writeText(text);
         });
 
+        ipcMain.on('zoom:wheel', (event, delta) => {
+            const view = viewManager.getActiveView();
+            let zoomLevel = view.object.webContents.getZoomLevel();
+
+            if (delta > 0) {
+                zoomLevel -= 0.5;
+            } else if (delta < 0) {
+                zoomLevel += 0.5;
+            }
+            zoomLevel = Math.min(3, Math.max(-2, zoomLevel));
+            view.object.webContents.setZoomLevel(zoomLevel);
+        });
+
         //更新左边导航栏
         ipcMain.on('update:menu', async (event, menu) => {
             const manager = await lokiManager;
@@ -158,14 +171,13 @@ class WindowManager{
             this.closeAllSites();
         });
 
-        ipcMain.on('update:custom', async (event, custom) => {
+        ipcMain.on('update:setting', async (event, setting) => {
             const manager = await lokiManager;
-            manager.updateCustomization(custom)
+            manager.updateSetting(setting)
         })
     }
 
     bindEvents(){
-        // this.window.on('restore', () => {});
         this.window.on('resize', () => {
             if (this.resizeTimer) clearTimeout(this.resizeTimer);
             this.resizeTimer = setTimeout(() => {
@@ -173,8 +185,11 @@ class WindowManager{
             }, 200);
         })
 
-        this.window.on('move', () => {
-            this.handleMove();
+        this.window.on('move', async () => {
+            const res = await eventManager.send('get:setting', 'isWindowEdgeAdsorption');
+            if(res.value){
+                this.handleMove();
+            }
         });
 
         this.window.on('focus', () => {

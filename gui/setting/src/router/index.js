@@ -24,16 +24,17 @@ const router = createRouter({
       name: 'list',
       component: () => import('@/views/ListView.vue')
     },
+
+    {
+      path: '/set',
+      name: 'set',
+      component: () => import('@/views/SetView.vue')
+    },
     {
       path: '/help',
       name: 'help',
       component: () => import('@/views/HelpView.vue')
     },
-    {
-      path: '/plan',
-      name: 'plan',
-      component: () => import('@/views/PlanView.vue')
-    }
   ]
 })
 

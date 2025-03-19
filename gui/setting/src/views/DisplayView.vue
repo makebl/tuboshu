@@ -29,7 +29,7 @@ function updateCloseMenu(evt) {
 
 <template>
   <div id="content-main">
-    <n-alert :show-icon="false" type="info" style="margin-bottom: 1rem;">
+    <n-alert :show-icon="false" type="info" class="custom-margin">
       <n-h3 style="margin-bottom: 0;">移动排序</n-h3>
     </n-alert>
 
@@ -77,6 +77,9 @@ function updateCloseMenu(evt) {
   margin-top: 1rem;
   flex: 1;
   border: 1px solid var(--color-border);
+}
+.custom-margin{
+  margin-bottom: 1rem;
 }
 
 .box:first-child{
