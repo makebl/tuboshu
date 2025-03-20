@@ -21,6 +21,7 @@ onMounted(async () => {
 
 const changeSwitch = async (val) => {
   const setting = { name : 'isWindowEdgeAdsorption', value: val ? 1 : 0}
+
   window.myApi.updateSetting(setting);
   message.success(`设置已更新,请重新启动`)
 }

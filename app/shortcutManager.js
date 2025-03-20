@@ -2,7 +2,7 @@ const { app, globalShortcut, screen} = require('electron');
 const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
 const viewManager = require('./viewManager');
-const lokiManager = require('./lokiManager');
+const lokiManager = require('./store/lokiManager');
 const eventManager = require('./eventManager');
 const CONS = require('./constants');
 

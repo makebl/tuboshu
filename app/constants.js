@@ -6,20 +6,14 @@ module.exports = Object.freeze({
         WIDTH: 1024,
         MENU_WIDTH: 50
     },
-    CUSTOMIZATION: [
-        {
-            name: "defaultWindowSize",
-            value: {
-                width: 1024,
-                height: 768,
-                menu_width:50
-            },
+    CONFIG: {
+        defaultWindowSize : {
+            width: 1024,
+            height: 768,
         },
-        {
-            name: "isWindowEdgeAdsorption",
-            value: 1,
-        }
-    ],
+        isWindowEdgeAdsorption: 1
+    },
+
     PATH: {
         APP_PATH: path.join(__dirname, '..'),
     },

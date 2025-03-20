@@ -1,4 +1,4 @@
-const tld = require('tldts');
+const tld = require('tldjs');
 
 class Utility {
 

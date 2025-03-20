@@ -1,8 +1,9 @@
 {
   "name": "tuboshu",
-  "version": "v1.2.0",
+  "version": "v1.2.1",
   "main": "app/main.js",
   "scripts": {
+    "start:debug": "electron --enable-logging --log-file=electron.log --trace-warnings .",
     "start": "electron .",
     "pack": "electron-builder --dir",
     "build": "electron-builder"
@@ -18,8 +19,9 @@
     "electron-builder": "^25.1.8"
   },
   "dependencies": {
+    "conf": "10.2.0",
     "lokijs": "^1.5.12",
-    "tldts": "^6.1.84"
+    "tldjs": "^2.3.1"
   },
   "build": {
     "appId": "com.tuboshu.tuboshu",

@@ -1,9 +1,8 @@
 const {app, nativeImage} = require("electron");
-const eventManager = require('./eventManager');
 const crypto = require('crypto');
 const path = require('path');
 const Loki = require('lokijs');
-const CONS = require('./constants');
+const CONS = require('../constants');
 
 const dbPath = path.join(app.getPath('userData'),  'data.db');
 const md5Hash = (data) => crypto.createHash('md5').update(data).digest('hex');
@@ -57,19 +56,6 @@ class LokiManager {
                 this.db.saveDatabase();
             }
         }
-
-        if (!this.db.getCollection('settings')) {
-            const sitesCollection = this.db.addCollection('settings', { indices: ['name'], unique: ['name'] });
-            if (sitesCollection.count() === 0) {
-                sitesCollection.insert(CONS.CUSTOMIZATION);
-                this.db.saveDatabase();
-            }
-        }
-
-        eventManager.on("get:setting", (name, resolve) => {
-            const res = this.getSetting(name)
-            resolve(res)
-        })
     }
 
     // 方法无需再等待，因为初始化已完成
@@ -139,22 +125,6 @@ class LokiManager {
     updateShortcut(shortcut) {
         const shortcutCollection = this.db.getCollection('shortcuts');
         shortcutCollection.findAndUpdate({name: shortcut.name}, (doc)=>{Object.assign(doc, shortcut)});
-        return this.db.saveDatabase();
-    }
-
-    getSettings(){
-        const settingCollection = this.db.getCollection('settings');
-        return settingCollection.find({});
-    }
-
-    getSetting(name){
-        const settingCollection = this.db.getCollection('settings');
-        return settingCollection.findOne({name: name});
-    }
-
-    updateSetting(setting) {
-        const settingCollection = this.db.getCollection('settings');
-        settingCollection.findAndUpdate({name: setting.name}, (doc)=>{Object.assign(doc, setting)});
         return this.db.saveDatabase();
     }
 }

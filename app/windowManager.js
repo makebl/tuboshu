@@ -1,6 +1,7 @@
 const { app, BaseWindow, View, screen, ipcMain, clipboard, WebContentsView, Menu, nativeTheme } = require('electron')
 const viewManager = require('./viewManager');
-const lokiManager = require('./lokiManager');
+const lokiManager = require('./store/lokiManager');
+const storeManager = require('./store/storeManager');
 const eventManager = require('./eventManager');
 const CONS = require('./constants');
 
@@ -81,9 +82,8 @@ class WindowManager{
             return manager.getShortcuts()
         });
 
-        ipcMain.handle('get:settings', async (event, ...args) => {
-            const manager = await lokiManager;
-            return manager.getSettings()
+        ipcMain.handle('get:settings', (event, ...args) => {
+             return storeManager.getSettings()
         });
 
         ipcMain.handle('update:shortcut', async (event, shortcut) => {
@@ -171,9 +171,8 @@ class WindowManager{
             this.closeAllSites();
         });
 
-        ipcMain.on('update:setting', async (event, setting) => {
-            const manager = await lokiManager;
-            manager.updateSetting(setting)
+        ipcMain.on('update:setting', (event, setting) => {
+            storeManager.updateSetting(setting)
         })
     }
 
@@ -185,9 +184,9 @@ class WindowManager{
             }, 200);
         })
 
-        this.window.on('move', async () => {
-            const res = await eventManager.send('get:setting', 'isWindowEdgeAdsorption');
-            if(res.value){
+        this.window.on('move', () => {
+            const res = storeManager.getSetting('isWindowEdgeAdsorption');
+            if(res){
                 this.handleMove();
             }
         });

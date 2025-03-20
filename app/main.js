@@ -1,4 +1,4 @@
-const { app, BaseWindow} = require('electron')
+const { app, crashReporter} = require('electron')
 const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
 const shortcutManager = require('./shortcutManager');
@@ -7,6 +7,14 @@ const shortcutManager = require('./shortcutManager');
 app.commandLine.appendSwitch('disable-gpu');
 app.commandLine.appendSwitch('disable-software-rasterizer');
 app.commandLine.appendSwitch('disable-extensions');
+app.commandLine.appendSwitch('ignore-certificate-errors');
+
+// crashReporter.start({
+//   productName: 'Tuboshu',
+//   companyName: 'Tuboshu',
+//   submitURL: '',
+//   uploadToServer: false,
+// });
 
 app.isQuitting = false;
 const singleLock = app.requestSingleInstanceLock();
@@ -27,7 +35,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-  if (BaseWindow.getAllWindows().length === 0) {
+  if (!windowManager.getWindow()) {
     windowManager.createWindow();
   }
 })
@@ -46,3 +54,7 @@ app.on('render-process-gone', (event, webContents, details) => {
 process.on('unhandledRejection', (error) => {
   console.error('未处理的Promise拒绝:', error)
 })
+
+process.on('uncaughtException', (err) => {
+  console.error('主进程崩溃:', err);
+});

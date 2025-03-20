@@ -1,7 +1,7 @@
 const { WebContentsView, shell, session} = require('electron')
 const { Utility } = require('./utility/utility');
 const eventManager = require('./eventManager');
-const lokiManager = require('./lokiManager');
+const lokiManager = require('./store/lokiManager');
 const CONS = require('./constants');
 const userAgent = require('./disguise/userAgent');
 
@@ -40,7 +40,6 @@ class ViewManager {
     }
 
     createNewView(url, name) {
-
         if (this.isExist(name)) {
             this.activeView(name)
             return null;
@@ -54,13 +53,15 @@ class ViewManager {
         if(url.includes("localhost")) preloadjs = "setting.js"
 
         let view = new WebContentsView({webPreferences: {
-            partition: partitionName,
+            sandbox: true,
+            webSecurity: true,
             nodeIntegration: false,
             contextIsolation: true,
-            webSecurity: true,
+            partition: partitionName,
             preload: CONS.PATH.APP_PATH + '/app/preload/'+ preloadjs
         }})
 
+        this.renderProcessGone(view);
         view.webContents.setZoomLevel(0)
         if(!url.includes("google")){
             view.webContents.setUserAgent(userAgent.ua)
@@ -71,10 +72,8 @@ class ViewManager {
             this.setProxy(mySession, name).then(()=>{
                 view.webContents.loadURL(url).then(()=>{
                     eventManager.emit('set:title', view.webContents.getTitle());
-                }).catch(e => {
-                    view.webContents.loadFile("gui/error.html").finally(
-                        eventManager.emit('set:title', "加载页面异常...")
-                    )
+                }).catch(err => {
+                    console.error('Failed to load URL:', err);
                 })
             });
         }else{
@@ -84,12 +83,10 @@ class ViewManager {
         }
 
         view.webContents.setWindowOpenHandler((details) => {
-
             if(Utility.isMainDomainEqual(details.url, url)){
                 view.webContents.send('open:window', details.url)
                 return { action: 'deny' };
             }
-
             shell.openExternal(details.url).finally();
             return { action: 'deny' };
         })
@@ -106,7 +103,6 @@ class ViewManager {
         })
         return view
     }
-
 
     injectJsCode(view, name){
         //did-finish-load
@@ -129,6 +125,14 @@ class ViewManager {
             });
         }
     }
+
+    renderProcessGone(view){
+        view.webContents.on('render-process-gone', (event, details) => {
+            console.error('渲染进程崩溃:', details.reason);
+            if (!view.webContents.isDestroyed()) view.webContents.reload();
+        });
+    }
+
 }
 
 module.exports = new ViewManager();
