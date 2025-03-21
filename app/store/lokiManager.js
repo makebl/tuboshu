@@ -81,6 +81,7 @@ class LokiManager {
         site.name = md5Hash(site.name.trim()+""+ Date.now());
         sitesCollection.insert(site);
         this.db.saveDatabase();
+        return site;
     }
 
     updateSite(site) {

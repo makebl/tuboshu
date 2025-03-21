@@ -1,6 +1,6 @@
 {
   "name": "tuboshu",
-  "version": "v1.2.1",
+  "version": "v1.2.2",
   "main": "app/main.js",
   "scripts": {
     "start:debug": "electron --enable-logging --log-file=electron.log --trace-warnings .",
@@ -37,8 +37,8 @@
       "!node_modules/**/{.cache,.bin,test}"
     ],
     "asar": true,
-    "asarUnpack": [],
     "compression": "maximum",
+    "removePackageScripts": true,
     "mac": {
       "category": "public.app-category.productivity",
       "target": "dmg",
@@ -47,7 +47,7 @@
       "artifactName": "${productName}-Setup-${version}-mac-${arch}.${ext}"
     },
     "win": {
-      "target": "nsis",
+      "target": "nsis ",
       "icon": "build/win_icon.ico",
       "artifactName": "${productName}-Setup-${version}-win-${arch}.${ext}"
     },

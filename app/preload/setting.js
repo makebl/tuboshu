@@ -5,6 +5,8 @@ contextBridge.exposeInMainWorld('myApi', {
     getShortcuts: () => ipcRenderer.invoke('get:shortcuts'),
     getVersion: () => ipcRenderer.invoke('get:version'),
     getSettings: () => ipcRenderer.invoke('get:settings'),
+    getFavicon: (name) => ipcRenderer.invoke('get:favicon', name),
+
     updateShortcut: (shortcut) => ipcRenderer.invoke('update:shortcut', shortcut),
     updateMenu: (menu) => ipcRenderer.send('update:menu', menu),
     batchMenus: (menus) => ipcRenderer.send('batch:menus', menus),

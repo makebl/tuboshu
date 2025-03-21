@@ -3,7 +3,10 @@ const viewManager = require('./viewManager');
 const lokiManager = require('./store/lokiManager');
 const storeManager = require('./store/storeManager');
 const eventManager = require('./eventManager');
+const fetchIcon = require('./utility/fetchIcon');
 const CONS = require('./constants');
+const tld = require("tldjs");
+const {Utility} = require("./utility/utility");
 
 class WindowManager{
 
@@ -159,6 +162,10 @@ class WindowManager{
         //新增左边导航栏
         ipcMain.on('add:menu', async (event, menu) => {
             const manager = await lokiManager;
+            if(menu.img.endsWith("AAAAASUVORK5CYII=")){
+                const iconData = storeManager.get(Utility.getHostName(menu.url));
+                if(iconData) menu.img = iconData;
+            }
             manager.addSite(menu);
             this.menuView.webContents.reload();
         });
@@ -173,7 +180,31 @@ class WindowManager{
 
         ipcMain.on('update:setting', (event, setting) => {
             storeManager.updateSetting(setting)
-        })
+        });
+
+        ipcMain.handle('get:favicon', async (event, name) => {
+            try {
+                const manager = await lokiManager;
+                const site = manager.getSite(name);
+
+                const hostname = Utility.getHostName(site.url)
+                let iconData= storeManager.get(hostname)
+
+                if (!iconData) {
+                    const faviconUrl = await fetchIcon.getFaviconUrl(site.url);
+                    iconData = await fetchIcon.fetchFaviconAsBase64(faviconUrl);
+                }
+
+                manager.updateSite(Object.assign(site, {img: iconData}))
+                storeManager.set(hostname, iconData);
+                this.menuView.webContents.reload();
+                return iconData;
+
+            } catch (error) {
+                console.error('获取favicon失败:', error);
+                return null;
+            }
+        });
     }
 
     bindEvents(){

@@ -10,9 +10,13 @@ const list = ref([]);
 const isJsEditor = ref(false);
 const jsElement = ref({});
 
-onMounted(async () => {
+const initData = async () => {
   const config = await window.myApi.getConfig();
   list.value = [...config.openMenus, ...config.closeMenus];
+};
+
+onMounted(async () => {
+  await initData()
 });
 
 const addNew = () => {
@@ -37,20 +41,22 @@ const handleRemove = (element) => {
   window.myApi.removeMenu(toRaw(element));
 };
 
-const handleSaveForm = (element) => {
+const handleSaveForm = async (element) => {
   if(element.isNew === true){
     element.isNew = false;
     element.name = element.url;
     list.value.unshift(element)
-    window.myApi.addMenu(toRaw(element));
+    window.myApi.addMenu(toRaw(element))
   }else{
     list.value.forEach(item => {
       if (item.name === element.name) {
         Object.assign(item, element);
-        window.myApi.updateMenu(toRaw(item));
+        window.myApi.updateMenu(toRaw(item))
       }
     })
   }
+
+  await initData()
 };
 
 const handleJsEditor = (name) => {

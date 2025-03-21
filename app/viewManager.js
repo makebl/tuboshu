@@ -61,11 +61,11 @@ class ViewManager {
             preload: CONS.PATH.APP_PATH + '/app/preload/'+ preloadjs
         }})
 
+
         this.renderProcessGone(view);
         view.webContents.setZoomLevel(0)
-        if(!url.includes("google")){
-            view.webContents.setUserAgent(userAgent.ua)
-        }
+        view.webContents.setUserAgent(userAgent.ua)
+        Utility.resetUserAgentForGoogle(view)
 
         if(isRemoteAddr){
             this.injectJsCode(view, name);
