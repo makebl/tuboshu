@@ -1,5 +1,4 @@
 const tld = require('tldjs');
-const tldjs = require("tldjs");
 
 class Utility {
 
@@ -11,7 +10,7 @@ class Utility {
     }
 
     static getHostName (url) {
-        return tldjs.parse(url.toLowerCase()).hostname
+        return tld.parse(url.toLowerCase()).hostname
     }
     static appendJsCode(code) {
         return `(function() {

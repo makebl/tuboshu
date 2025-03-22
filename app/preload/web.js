@@ -3,14 +3,6 @@ ipcRenderer.on('open:window', (event, url) => {
     window.location.href = url;
 });
 
-window.addEventListener('DOMContentLoaded', (event) => {
-    const link = document.querySelector('link[rel="icon"], link[rel="shortcut icon"]');
-    const ret = link ? link.href : '/favicon.ico';
-
-    console.log('ret', ret);
-    
-});
-
 window.addEventListener('contextmenu', (e) => {
     e.preventDefault();
     const selectionText = window.getSelection().toString().trim();

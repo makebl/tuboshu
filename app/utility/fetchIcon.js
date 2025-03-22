@@ -16,6 +16,10 @@ async function getFaviconUrl(pageUrl) {
             try {
                 const jsCode = getWebFaviconJs();
                 const faviconRelUrl = await win.webContents.executeJavaScript(jsCode);
+                if (!faviconRelUrl) {
+                    reject(new Error("icon文件不存在"));
+                    return;
+                }
                 resolve(faviconRelUrl);
             } catch (error) {
                 reject(error);
@@ -92,7 +96,7 @@ function getWebFaviconJs() {
             });
     
             if(links.length === 0){
-                return null;
+                return new URL('/favicon.ico', window.location.href).href;
             }
             const appleLink = links.find(link => {
                 return link.rel.toLowerCase().includes('apple');

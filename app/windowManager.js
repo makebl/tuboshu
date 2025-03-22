@@ -186,7 +186,7 @@ class WindowManager{
             try {
                 const manager = await lokiManager;
                 const site = manager.getSite(name);
-
+                
                 const hostname = Utility.getHostName(site.url)
                 let iconData= storeManager.get(hostname)
 
@@ -198,11 +198,10 @@ class WindowManager{
                 manager.updateSite(Object.assign(site, {img: iconData}))
                 storeManager.set(hostname, iconData);
                 this.menuView.webContents.reload();
-                return iconData;
+                return {ret:0, data:iconData};
 
             } catch (error) {
-                console.error('获取favicon失败:', error);
-                return null;
+                return {ret:1, data:'获取失败:'+ error};
             }
         });
     }

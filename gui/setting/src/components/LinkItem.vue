@@ -47,13 +47,16 @@ const handleClickGetIcon = ()=>{
   if(icon.value.endsWith('ZP8EQEcFCACPFvgAAAAASUVORK5CYII=')){
     svgIcon.value?.classList.add('svg-element');
     window.myApi.getFavicon(props.element.name).then((res)=>{
-          icon.value = res;
-          svgIcon.value?.classList.remove('svg-element');
+        if(res.ret === 0){
+          icon.value = res.data;
           message.success('获取成功')
+          svgIcon.value?.classList.remove('svg-element');
+        }else{
+          message.error(res.data)
+          svgIcon.value?.classList.remove('svg-element');
         }
-    ).catch((err)=>{
-      message.error(err.message)
-    })
+      }
+    )
   }else{
     message.info('已存在图标,无需获取')
   }
