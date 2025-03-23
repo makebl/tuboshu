@@ -44,7 +44,7 @@ defineProps({
 }
 
 .wrap:hover {
-  background-color: #f0f0f0;
+  background-color: var(--color-background-soft);
 }
 
 </style>

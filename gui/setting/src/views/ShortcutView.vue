@@ -37,7 +37,7 @@ onMounted(async () => {
 <style scoped>
 .box{
   margin-top: 1rem;
-  border: 1px solid #efeff5;
+  border: 1px solid var(--new-color-border);;
 }
 
 .box-card{
@@ -48,7 +48,7 @@ onMounted(async () => {
 .title{
   font-size: 15px;
   padding: 0.5em;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--new-color-border);
   background-color: var(--color-background-mute);
   display: flex;
   justify-content: flex-start;

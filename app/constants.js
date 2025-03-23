@@ -11,7 +11,12 @@ module.exports = Object.freeze({
             width: 1024,
             height: 768,
         },
-        isWindowEdgeAdsorption: 1
+        defaultMenuWidth: 50,
+        leftMenuPosition:'left',
+        isWindowEdgeAdsorption: 1,
+        isMemoryOptimizationEnabled:1,
+        isMenuVisible:1,
+        systemTheme:'system'
     },
 
     PATH: {
@@ -136,6 +141,12 @@ module.exports = Object.freeze({
             tag: "隐藏/显示 软件窗口",
             name: "softwareWindowVisibilityController",
             cmd: "CommandOrControl+H",
+            isOpen:true,
+        },
+        {
+            tag: "隐藏/显示 侧边导航",
+            name: "isMenuVisible",
+            cmd: "CommandOrControl+B",
             isOpen:true,
         },
         {

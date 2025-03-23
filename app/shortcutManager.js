@@ -3,8 +3,10 @@ const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
 const viewManager = require('./viewManager');
 const lokiManager = require('./store/lokiManager');
+const storeManager = require('./store/storeManager');
 const eventManager = require('./eventManager');
 const CONS = require('./constants');
+
 
 // 在 Electron 中，你可以通过简单的字符串组合来定义一系列的快捷键。
 // 这些字符串是由一个或多个由加号(+)连接的修饰键和一个键（key）组成。
@@ -53,6 +55,7 @@ class ShortcutManager{
         });
         this.openDevTools();
         this.forceSystemExit();
+        this.unfiledPatchCorrection();
     }
 
     isDisableShortcuts(shortcut){
@@ -156,6 +159,26 @@ class ShortcutManager{
         win.setBounds({x:width-winWidth, y:0, width:winWidth, height:height})
     }
 
+    isMenuVisible(){
+        if(storeManager.getSetting('isMenuVisible')){
+            storeManager.set('isMenuVisible', 0);
+        }else{
+            storeManager.set('isMenuVisible', 1);
+        }
+        windowManager.handleResize();
+    }
+
+    unfiledPatchCorrection(){
+        lokiManager.then((manager) => {
+            const shortcuts = manager.getShortcuts().map(item => item.name);
+            CONS.SHORTCUT.map(item => {
+                if(!shortcuts.includes(item.name)){
+                    manager.addShortcut(item);
+                }
+            })
+        })
+    }
+
     openDevTools(){
         globalShortcut.register('CommandOrControl+Shift+I', () => {
             const view = viewManager.getActiveView();
@@ -172,6 +195,8 @@ class ShortcutManager{
             app.exit()
         });
     }
+
+
 
     unregisterAll(){
         this.destroy();

@@ -98,23 +98,29 @@ function getWebFaviconJs() {
             if(links.length === 0){
                 return new URL('/favicon.ico', window.location.href).href;
             }
-            const appleLink = links.find(link => {
-                return link.rel.toLowerCase().includes('apple');
-            })
-            if(appleLink){
-                return new URL(appleLink.href, window.location.href).href;
-            }
             const dataLink = links.find(link => {
                 return link.href.startsWith('data:');
             })
             if(dataLink){
                 return dataLink.href;
             }
+            const appleLink = links.find(link => {
+                return link.rel.toLowerCase().includes('apple');
+            })
+            if(appleLink){
+                return new URL(appleLink.href, window.location.href).href;
+            }
             const pngLink = links.find(link => {
                 return link.href.toLowerCase().endsWith('.png');
             })
             if(pngLink){
                 return  new URL(pngLink.href, window.location.href).href;
+            }
+            const svgLink = links.find(link => {
+                return link.href.toLowerCase().endsWith('.svg');
+            })
+            if(svgLink){
+                return  new URL(svgLink.href, window.location.href).href;
             }
             const icoLink = links.find(link => {
                 return link.href.toLowerCase().endsWith('.ico');

@@ -20,6 +20,18 @@ body{
     box-shadow: 5px 0 5px -2px rgba(0, 0, 0, 0.3);
 }
 
+#nav-wrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content:space-between;
+    height: 100vh;
+}
+
+#nav-box{
+    height: calc(100vh - 50px);
+    overflow: hidden;
+}
+
 #right{
     display: flex;
     justify-content: center;
@@ -30,8 +42,8 @@ body{
 }
 
 .logo{
-    width: 100%;
-    padding: 10px;
+    width:50px;
+    padding: 10px 5px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -39,9 +51,20 @@ body{
     filter: grayscale(100%);
 }
 
-.logo img{
+.logo>span{
+    display: inline-flex;
     width: 30px;
     height: 30px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: #eee;
+    overflow: hidden;
+}
+
+.logo img{
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     object-fit: cover;
 }
@@ -51,7 +74,6 @@ body{
     filter: grayscale(0%);
 }
 
-
 .highlighted .logo{
     border-left: 3px solid #10A37F;
     background: white;
@@ -59,7 +81,21 @@ body{
 }
 
 #set-box{
-    position: fixed;
-    left: 0;
-    bottom: 0;
+    margin-top: auto;
+    height: 50px;
+}
+
+@media (prefers-color-scheme: dark) {
+    #left{
+        background: #111;
+    }
+
+    .logo:hover{
+        background: #333;
+    }
+
+    .highlighted .logo{
+        border-left: 3px solid #10A37F;
+        background: #232327;
+    }
 }

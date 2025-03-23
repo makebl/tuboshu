@@ -5,8 +5,8 @@ const storeManager = require('./store/storeManager');
 const eventManager = require('./eventManager');
 const fetchIcon = require('./utility/fetchIcon');
 const CONS = require('./constants');
-const tld = require("tldjs");
-const {Utility} = require("./utility/utility");
+const Utility = require("./utility/utility");
+const Layout = require("./utility/layout");
 
 class WindowManager{
 
@@ -28,11 +28,13 @@ class WindowManager{
     }
 
     createWindow() {
+        const winSize = Layout.getWinSize();
         const emptyMenu = Menu.buildFromTemplate([])
         Menu.setApplicationMenu(emptyMenu)
+
         const win = new BaseWindow({
-            width: CONS.SIZE.WIDTH,
-            height: CONS.SIZE.HEIGHT,
+            width: winSize.width,
+            height: winSize.height,
             autoHideMenuBar: false,
             show:false,
             icon: CONS.PATH.APP_PATH+'/icon.ico',
@@ -51,14 +53,14 @@ class WindowManager{
             }
         });
 
-        let [width, height] = win.getContentSize();
-        menuView.setBounds({ x: 0, y: 0, width:CONS.SIZE.MENU_WIDTH, height })
+        const layout = Layout.getLayout(win)
+        menuView.setBounds(layout.menu)
         menuView.webContents.loadFile('gui/index.html').then(()=>{
             this.gotoSetting();
         })
 
         const webView = new View();
-        webView.setBounds({ x: CONS.SIZE.MENU_WIDTH, y: 0, width: width-CONS.SIZE.MENU_WIDTH, height})
+        webView.setBounds(layout.web)
 
         win.contentView.addChildView(menuView);
         win.contentView.addChildView(webView);
@@ -70,6 +72,7 @@ class WindowManager{
 
         this.bindIpcMain();
         this.bindEvents();
+        this.setSystemTheme();
         this.uselessSiteCleaner();
     }
 
@@ -120,8 +123,8 @@ class WindowManager{
         ipcMain.on('reload:url', (event, url, name) => {
             let view = viewManager.createNewView(url, name)
             if(view !== null){
-                let {width, height} = this.webView.getBounds()
-                view.setBounds({ x: 0, y: 0, width, height})
+                const layout = Layout.getLayout(this.window)
+                view.setBounds(layout.view)
                 this.webView.addChildView(view)
             }
         })
@@ -148,14 +151,15 @@ class WindowManager{
         ipcMain.on('update:menu', async (event, menu) => {
             const manager = await lokiManager;
             manager.updateSite(menu);
+            this.closeHideSites();
             this.menuView.webContents.reload();
-            this.closeAllSites();
         });
 
         //批量更新排序
         ipcMain.on('batch:menus', async (event, menus) => {
             const manager = await lokiManager;
             manager.batchUpdateSite(menus);
+            this.closeHideSites();
             this.menuView.webContents.reload();
         });
 
@@ -167,6 +171,7 @@ class WindowManager{
                 if(iconData) menu.img = iconData;
             }
             manager.addSite(menu);
+            this.closeHideSites();
             this.menuView.webContents.reload();
         });
 
@@ -175,11 +180,23 @@ class WindowManager{
             const manager = await lokiManager;
             manager.removeSite(menu);
             this.menuView.webContents.reload();
-            this.closeAllSites();
+            this.closeHideSites();
         });
 
         ipcMain.on('update:setting', (event, setting) => {
             storeManager.updateSetting(setting)
+            if(setting.name === "systemTheme"){
+                this.setSystemTheme();
+            }
+            if(setting.name === "isMenuVisible"){
+                this.handleResize()
+            }
+            if(setting.name === "leftMenuPosition"){
+                this.handleResize()
+            }
+            if (setting.name === "isMemoryOptimizationEnabled"){
+                this.uselessSiteCleaner();
+            }
         });
 
         ipcMain.handle('get:favicon', async (event, name) => {
@@ -215,10 +232,9 @@ class WindowManager{
         })
 
         this.window.on('move', () => {
-            const res = storeManager.getSetting('isWindowEdgeAdsorption');
-            if(res){
-                this.handleMove();
-            }
+            const res = storeManager .getSetting('isWindowEdgeAdsorption');
+            if(!res) return;
+            this.handleMove();
         });
 
         this.window.on('focus', () => {
@@ -244,12 +260,12 @@ class WindowManager{
     }
 
     handleResize() {
-        const [width, height] = this.window.getContentSize();
-        this.menuView.setBounds({ x: 0, y: 0, width: CONS.SIZE.MENU_WIDTH, height });
-        this.webView.setBounds({ x: CONS.SIZE.MENU_WIDTH, y: 0, width: width - CONS.SIZE.MENU_WIDTH, height });
+        const layout = Layout.getLayout(this.window)
+        this.menuView.setBounds(layout.menu);
+        this.webView.setBounds(layout.web);
 
         viewManager.views.forEach(view => {
-            view.object.setBounds({ x: 0, y: 0, width: width - CONS.SIZE.MENU_WIDTH, height });
+            view.object.setBounds(layout.view);
         });
     }
 
@@ -292,11 +308,18 @@ class WindowManager{
         }
     }
 
+    setSystemTheme(){
+        nativeTheme.themeSource = storeManager.getSetting('systemTheme');
+    }
+
     gotoSetting(){
         this.menuView.webContents.send('auto:click', CONS.SETTING[0]);
     }
 
     uselessSiteCleaner(){
+        const res = storeManager.getSetting('isMemoryOptimizationEnabled');
+        if(!res) return;
+
         const currentView = viewManager.getActiveView();
         lokiManager.then((manager) => {
             const urls = manager.getMenus().openMenus.map(item => item.url);
@@ -316,15 +339,20 @@ class WindowManager{
         })
 
         clearTimeout(this.cleanupTimer);
-        this.cleanupTimer = setTimeout(() => this.uselessSiteCleaner(), 10*60*1000);
+        this.cleanupTimer = setTimeout(() => this.uselessSiteCleaner(), 5*60*1000);
     }
 
-    closeAllSites(){
-        viewManager.views = viewManager.views.filter(view => {
-            if(view.name  === "setting") return true;
-            this.webView.removeChildView(view.object);
-            view.object.webContents.close();
-            return false;
+    closeHideSites(){
+        lokiManager.then((manager) => {
+            const urls = manager.getMenus().openMenus.map(item => item.url);
+            viewManager.views = viewManager.views.filter(view => {
+                if(view.name  === "setting") return true;
+                if(!urls.includes(view.url)){
+                    this.webView.removeChildView(view.object);
+                    view.object.webContents.close();
+                    return false;
+                }
+            })
         })
     }
 

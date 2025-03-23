@@ -7,6 +7,14 @@ window.addEventListener('DOMContentLoaded', () => {
         navWrapper.addEventListener('click', handleNavItemClick);
     });
     window.myApi.autoClick(autoNavItemClick);
+    //
+    // const scrollInstance = new DragScroll({
+    //     container: '#nav-box',
+    //     content: '.nav-item',
+    //     scrollSpeed: 0.6,
+    //     dragSensitivity: 1.2
+    // });
+
 })
 
 function updateMenu(menu, pid) {
@@ -16,7 +24,7 @@ function updateMenu(menu, pid) {
         const navItem = `           
             <div class="nav-item" data-url="${item.url}" data-name="${item.name}">
                 <div class="logo">
-                    <img src="${item.img}" alt="${item.tag}">
+                    <span><img src="${item.img}" alt="${item.tag}"></span>
                 </div>
             </div>
         `;

@@ -128,6 +128,12 @@ class LokiManager {
         shortcutCollection.findAndUpdate({name: shortcut.name}, (doc)=>{Object.assign(doc, shortcut)});
         return this.db.saveDatabase();
     }
+
+    addShortcut(shortcut) {
+        const shortcutCollection = this.db.getCollection('shortcuts');
+        shortcutCollection.insert(shortcut);
+        return this.db.saveDatabase();
+    }
 }
 
 // 使用方式

@@ -25,7 +25,7 @@ class StoreManager{
         if(this.store.has(key)){
             return this.store.get(key);
         }
-        return  CONS.CONFIG[key]
+        return CONS.CONFIG[key]
     }
 
     updateSetting(setting){

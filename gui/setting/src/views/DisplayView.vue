@@ -28,8 +28,10 @@ function updateCloseMenu(evt) {
 </script>
 
 <template>
+
+
   <div id="content-main">
-    <n-alert :show-icon="false" type="info" class="custom-margin">
+    <n-alert :show-icon="false" type="info" style="margin-bottom: 1rem;">
       <n-h3 style="margin-bottom: 0;">移动排序</n-h3>
     </n-alert>
 
@@ -37,16 +39,15 @@ function updateCloseMenu(evt) {
       1.在图标上按住鼠标左键拖动可排序；<br />
       2.部分站点需要魔法上网，请自行解决。
     </n-alert>
-
   <n-flex>
     <div class="box">
       <h3>移动排序</h3>
       <draggable
-          class="list-group"
-          :list="list1"
-          group="people"
-          @change="updateOpenMenu"
-          itemKey="name"
+        class="list-group"
+        :list="list1"
+        group="people"
+        @change="updateOpenMenu"
+        itemKey="name"
       >
         <template #item="{ element, index }">
           <AiItem :element="element" />
@@ -78,9 +79,6 @@ function updateCloseMenu(evt) {
   flex: 1;
   border: 1px solid var(--color-border);
 }
-.custom-margin{
-  margin-bottom: 1rem;
-}
 
 .box:first-child{
   margin-right: 0;
@@ -111,5 +109,4 @@ function updateCloseMenu(evt) {
 .close-area{
   filter: grayscale(100%);
 }
-
 </style>

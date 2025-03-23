@@ -4,7 +4,7 @@ const trayManager = require('./trayManager');
 const shortcutManager = require('./shortcutManager');
 
 // app.disableHardwareAcceleration();
-app.commandLine.appendSwitch('disable-gpu');
+//app.commandLine.appendSwitch('disable-gpu');
 app.commandLine.appendSwitch('disable-software-rasterizer');
 app.commandLine.appendSwitch('disable-extensions');
 app.commandLine.appendSwitch('ignore-certificate-errors');

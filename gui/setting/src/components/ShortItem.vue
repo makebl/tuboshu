@@ -99,10 +99,10 @@ const changeSwitch = (val)=>{
   align-items: center;
   place-items: center;
   flex-wrap: wrap;
-  border-bottom: 1px solid #efeff5;
+  border-bottom: 1px solid var(--new-color-border);
 }
 .wrap:hover {
-  background-color: #f0f0f0;
+  background-color: var(--color-background-soft);
 }
 
 .switch{
