@@ -1,13 +1,13 @@
 const { app, BaseWindow, View, screen, ipcMain, clipboard, WebContentsView, Menu, nativeTheme } = require('electron')
+const { Utility } = require("./utility/utility");
 const viewManager = require('./viewManager');
 const lokiManager = require('./store/lokiManager');
 const storeManager = require('./store/storeManager');
 const eventManager = require('./eventManager');
 const fetchIcon = require('./utility/fetchIcon');
 const CONS = require('./constants');
-const Utility = require("./utility/utility");
-const Layout = require("./utility/layout");
 
+const Layout = require("./utility/layout");
 class WindowManager{
 
     isAdjusting = false;
@@ -167,9 +167,11 @@ class WindowManager{
         ipcMain.on('add:menu', async (event, menu) => {
             const manager = await lokiManager;
             if(menu.img.endsWith("AAAAASUVORK5CYII=")){
-                const iconData = storeManager.get(Utility.getHostName(menu.url));
+                const hostname = Utility.getHostName(menu.url)
+                const iconData = storeManager.get(hostname);
                 if(iconData) menu.img = iconData;
             }
+
             manager.addSite(menu);
             this.closeHideSites();
             this.menuView.webContents.reload();
