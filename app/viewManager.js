@@ -61,7 +61,6 @@ class ViewManager {
             preload: CONS.PATH.APP_PATH + '/app/preload/'+ preloadjs
         }})
 
-
         this.renderProcessGone(view);
         view.webContents.setZoomLevel(0)
         view.webContents.setUserAgent(userAgent.ua)

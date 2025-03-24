@@ -1,4 +1,5 @@
 const tld = require('tldjs');
+const userAgent = require('./../disguise/userAgent');
 
 class Utility {
 
@@ -25,11 +26,13 @@ class Utility {
     }
 
     static resetUserAgentForGoogle(view){
+        const platform = userAgent.getPlatformInfo();
         const session = view.webContents.session;
         session.webRequest.onBeforeSendHeaders(null);
         session.webRequest.onBeforeSendHeaders((details, callback) => {
-            if(details.url.includes("google")){
-                details.requestHeaders['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) tuboshu/v1.2.1 Chrome/132.0.6834.210 Electron/34.3.2 Safari/537.36';
+            const domains = ['google', 'grok', 'x.ai', 'cloudflare'];
+            if(domains.some(domain => details.url.includes(domain))){
+                details.requestHeaders['User-Agent'] = `Mozilla/5.0 ${platform} AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.6834.210 Electron/34.3.2 Safari/537.36`;
             }
             callback({ requestHeaders: details.requestHeaders });
         });

@@ -6,6 +6,11 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      name: 'list',
+      component: () => import('@/views/ListView.vue')
+    },
+    {
+      path: '/display',
       name: 'display',
       component: () => import('@/views/DisplayView.vue')
     },
@@ -14,21 +19,16 @@ const router = createRouter({
       name: 'shortcut',
       component: () => import('@/views/ShortcutView.vue')
     },
-    {
-      path: '/feedback',
-      name: 'feedback',
-      component: () => import('@/views/FeedbackView.vue')
-    },
-    {
-      path: '/list',
-      name: 'list',
-      component: () => import('@/views/ListView.vue')
-    },
 
     {
       path: '/set',
       name: 'set',
       component: () => import('@/views/SetView.vue')
+    },
+    {
+      path: '/feedback',
+      name: 'feedback',
+      component: () => import('@/views/FeedbackView.vue')
     },
     {
       path: '/help',

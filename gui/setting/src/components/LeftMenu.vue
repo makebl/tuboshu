@@ -5,12 +5,12 @@ import { RouterLink } from 'vue-router'
 
 const menuOptions = [
   {
-    label: () => h(RouterLink, {to: {name: 'display'}}, { default: () => '站点排序' }),
-    key: 'display',
+    label: () => h(RouterLink, {to: {name: 'list'}}, { default: () => '站点管理' }),
+    key: 'list',
   },
   {
-    label: () => h(RouterLink, {to: {name: 'list'}}, { default: () => '设置站点' }),
-    key: 'list',
+    label: () => h(RouterLink, {to: {name: 'display'}}, { default: () => '站点排序' }),
+    key: 'display',
   },
   {
     label: () => h(RouterLink, {to: {name: 'shortcut'}}, { default: () => '改快捷键' }),
