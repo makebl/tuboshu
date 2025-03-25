@@ -46,3 +46,7 @@
         <td><img src=https://github.com/user-attachments/assets/9dcbe414-b84f-452e-8a0e-51265aae6166 width=600/></td>
     </tr>
 </table>
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=deepshit2025/tuboshu&type=Date)](https://www.star-history.com/#deepshit2025/tuboshu&Date)

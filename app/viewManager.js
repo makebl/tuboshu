@@ -64,7 +64,8 @@ class ViewManager {
         this.renderProcessGone(view);
         view.webContents.setZoomLevel(0)
         view.webContents.setUserAgent(userAgent.ua)
-        Utility.resetUserAgentForGoogle(view)
+        Utility.alterRequestHeader(view)
+        Utility.alterResponseHeader(view)
 
         if(isRemoteAddr){
             this.injectJsCode(view, name);

@@ -47,7 +47,7 @@
       "artifactName": "${productName}-Setup-${version}-mac-${arch}.${ext}"
     },
     "win": {
-      "target": "portable",
+      "target": "nsis",
       "icon": "build/win_icon.ico",
       "artifactName": "${productName}-Setup-${version}-win-${arch}.${ext}"
     },

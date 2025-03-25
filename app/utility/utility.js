@@ -25,16 +25,32 @@ class Utility {
         })();`
     }
 
-    static resetUserAgentForGoogle(view){
+    static alterRequestHeader(view){
         const platform = userAgent.getPlatformInfo();
         const session = view.webContents.session;
         session.webRequest.onBeforeSendHeaders(null);
         session.webRequest.onBeforeSendHeaders((details, callback) => {
             const domains = ['google', 'grok', 'x.ai', 'cloudflare'];
-            if(domains.some(domain => details.url.includes(domain))){
+            if(domains.some(domain => details.url.toLowerCase().includes(domain))){
                 details.requestHeaders['User-Agent'] = `Mozilla/5.0 ${platform} AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.6834.210 Electron/34.3.2 Safari/537.36`;
             }
             callback({ requestHeaders: details.requestHeaders });
+        });
+    }
+
+    static alterResponseHeader(view){
+        const session = view.webContents.session;
+        session.webRequest.onHeadersReceived((details, callback) => {
+            const cspHeader = {
+                name: 'content-security-policy',
+                value: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:"
+            };
+
+            const domains = ['yuque.com'];
+            if(domains.some(domain => details.url.toLowerCase().includes(domain))){
+                details.responseHeaders[cspHeader.name] = cspHeader.value;
+            }
+            callback({ responseHeaders: details.responseHeaders });
         });
     }
 }
