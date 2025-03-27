@@ -5,6 +5,7 @@ const viewManager = require('./viewManager');
 const lokiManager = require('./store/lokiManager');
 const storeManager = require('./store/storeManager');
 const eventManager = require('./eventManager');
+const Layout = require('./utility/layout');
 const CONS = require('./constants');
 
 
@@ -113,13 +114,14 @@ class ShortcutManager{
     restoreDefaultWindow(){
         let win = windowManager.getWindow()
         const [width, height] = win.getSize();
+        const origin = Layout.getWinSize();
 
-        if(width === CONS.SIZE.WIDTH && height === CONS.SIZE.HEIGHT){
+        if(width === origin.width && height === origin.height){
             win.maximize();
         }else{
             if(win.isMaximized()) win.unmaximize();
             if(!win.isVisible()) win.show();
-            win.setSize(CONS.SIZE.WIDTH, CONS.SIZE.HEIGHT, true);
+            win.setSize(origin.width, origin.height, true);
             win.center();
         }
     }

@@ -3,6 +3,7 @@ import NewDrawer from "@/components/NewDrawer.vue";
 import { ref, onMounted } from 'vue';
 import JsEditorDrawer from "@/components/JsEditorDrawer.vue";
 
+const message = useMessage();
 const ele = ref({});
 const show = ref(false);
 const list = ref([]);
@@ -41,6 +42,19 @@ const handleRemove = (element) => {
   window.myApi.removeMenu(toRaw(element));
 };
 
+const handleClone = async (element) => {
+  const newElement = {
+      tag: element.tag + '-copy',
+     name: element.url,
+      url: element.url,
+      img: element.img,
+    isOpen:true
+  }
+  window.myApi.addMenu(newElement)
+  await initData()
+  message.success('克隆成功');
+};
+
 const handleSaveForm = async (element) => {
   if(element.isNew === true){
     element.isNew = false;
@@ -55,7 +69,6 @@ const handleSaveForm = async (element) => {
       }
     })
   }
-
   await initData()
 };
 
@@ -100,7 +113,7 @@ const handleSaveJsCode = (element) => {
       <div class="box-card" v-auto-height="{ offset: 20}">
         <div class="wrap">
           <template v-for="element in list">
-            <LinkItem :element="element" @edit="handleEdit" @remove="handleRemove" @jsEditor="handleJsEditor" />
+            <LinkItem :element="element" @edit="handleEdit" @remove="handleRemove" @clone="handleClone" @jsEditor="handleJsEditor" />
           </template>
         </div>
       </div>

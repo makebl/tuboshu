@@ -13,6 +13,10 @@ watch(() => props.element, (newVal) => {
 const show = ref(false);
 const options = [
   {
+    label: "克隆",
+    key: "clone"
+  },
+  {
     label: "修改",
     key: "modify"
   },
@@ -26,6 +30,8 @@ const emit = defineEmits(['edit', 'remove', 'jsEditor'])
 const handleSelect = (key) => {
    if(key === 'modify'){
       emit('edit', props.element)
+   }else if(key === 'clone'){
+      emit('clone', props.element)
    }else{
       emit('remove', props.element)
    }

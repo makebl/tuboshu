@@ -77,6 +77,7 @@ class WindowManager{
     }
 
     bindIpcMain(){
+
         //获取侧边栏配置
         ipcMain.handle('get:menu', async (event, ...args) => {
             const manager = await lokiManager;

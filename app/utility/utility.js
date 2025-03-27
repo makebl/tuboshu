@@ -1,4 +1,6 @@
 const tld = require('tldjs');
+const { readFileSync, readdirSync } = require('fs');
+const { join } = require('path');
 const userAgent = require('./../disguise/userAgent');
 
 class Utility {
@@ -23,6 +25,24 @@ class Utility {
                 console.error('Script injection failed:', e);
             }
         })();`
+    }
+
+    static getInjectPluginJsCode() {
+        const pluginDir = join(__dirname, './../plugin');
+        const jsFiles = readdirSync(pluginDir)
+            .filter(file => file.endsWith('.plugin.js'))
+            .sort();
+
+        let combinedCode = '';
+        for (const file of jsFiles) {
+            try {
+                const filePath = join(pluginDir, file);
+                combinedCode += readFileSync(filePath, 'utf-8');
+            } catch (err) {
+                console.error(`fail ${file}:`, err);
+            }
+        }
+        return combinedCode;
     }
 
     static alterRequestHeader(view){

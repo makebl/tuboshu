@@ -7,14 +7,7 @@ window.addEventListener('DOMContentLoaded', () => {
         navWrapper.addEventListener('click', handleNavItemClick);
     });
     window.myApi.autoClick(autoNavItemClick);
-    //
-    // const scrollInstance = new DragScroll({
-    //     container: '#nav-box',
-    //     content: '.nav-item',
-    //     scrollSpeed: 0.6,
-    //     dragSensitivity: 1.2
-    // });
-
+    new ScrollHide('#nav-box', {speed: 100,smooth: true});
 })
 
 function updateMenu(menu, pid) {

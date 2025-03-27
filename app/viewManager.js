@@ -114,6 +114,17 @@ class ViewManager {
                 await view.webContents.executeJavaScript(code);
             }
         })
+
+        // view.webContents.on('did-finish-load',async ()=>{
+        //     try {
+        //         const jsCode = Utility.getInjectPluginJsCode();
+        //         if(!jsCode){
+        //             await view.webContents.executeJavaScript(jsCode);
+        //         }
+        //     }catch (e){
+        //         console.error('error:', e);
+        //     }
+        // })
     }
 
     async setProxy(mySession, name) {
