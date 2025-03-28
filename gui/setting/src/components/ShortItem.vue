@@ -3,33 +3,42 @@ const message = useMessage();
 const props = defineProps({
   element: Object
 })
-const selectOptions = ref([
-  {label: "Ctrl", value: "CommandOrControl"},
-  {label: "Shift", value: "Shift"},
-  {label: "Alt", value: "Alt"},
-]);
 
-const cmd = props.element.cmd.split('+')
-const vleft = ref(cmd[0])
-const vright = ref(cmd[1])
+let cmd = (props.element.cmd).replace(/CommandOrControl/ig, 'Ctrl');
+const shortCut = ref(cmd);
 
-const handleUpdateValue = (val)=>{
-  let cmd =[val, vright.value].join("+")
-  let short = Object.assign(toRaw(props.element), { cmd: cmd});
-  sendShortcut(short);
-}
 const handleKeydown = (e)=>{
-  let tmpKey = vright.value
   e.preventDefault()
-  if (['Control', 'Shift', 'Alt'].includes(e.key)) return
+  e.stopPropagation();
 
-  tmpKey = (e.key === ' ') ? 'Space' : capitalize(e.key)
-  tmpKey = tmpKey.replace(/^Arrow/, '')
-  let cmd =[vleft.value, tmpKey].join("+")
-  let short = Object.assign(toRaw(props.element), { cmd: cmd, flag:false});
-  sendShortcut(short);
+  const modifiers = [];
+  e.ctrlKey && modifiers.push('Ctrl');
+  e.metaKey && modifiers.push('Ctrl');
+  e.altKey && modifiers.push('Alt');
+  e.shiftKey && modifiers.push('Shift');
+
+  if(modifiers.length >= 3 || (modifiers.length < 1)) return;
+  let key = (e.key === ' ') ? 'Space' : capitalize(e.key)
+  key = key.replace(/^Arrow/, '')
+  shortCut.value = modifiers.join("+")+"+";
+  if (['Control', 'Alt', 'Shift', 'Meta'].includes(key)) return;
+  shortCut.value = [...modifiers, key].join('+');
+
+  const cmdKey = shortCut.value.replace(/Ctrl/ig, 'CommandOrControl');
+  const short = Object.assign(toRaw(props.element), { cmd: cmdKey, flag:false});
+  sendShortcut(short)
 }
 
+const handleKeyup = (e)=>{
+  e.preventDefault()
+  e.stopPropagation();
+  const shortKey = shortCut.value.split("+").filter((item) => item !== '')
+  const modifierKeys = ['Ctrl', 'Shift', 'Alt'];
+
+  if(shortKey.every(key => modifierKeys.includes(key))){
+    shortCut.value = cmd
+  }
+}
 const capitalize = (str) => {
   if (!str) return str;
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -38,19 +47,18 @@ const capitalize = (str) => {
 const sendShortcut = (shortcut) => {
   window.myApi.updateShortcut(shortcut).then(res => {
     if(res.code === 0){
-      let tmp = res.data.cmd.split('+')
-      vleft.value = tmp[0]
-      vright.value = tmp[1]
       message.success(res.msg);
+      cmd = (res.data.cmd).replace(/CommandOrControl/ig, 'Ctrl');
     }else{
       message.error(res.msg);
+      shortCut.value = cmd
     }
   })
 }
 
 const changeSwitch = (val)=>{
-  let cmd =[vleft.value, vright.value].join("+")
-  let short = Object.assign(toRaw(props.element), { cmd:cmd, isOpen:val, flag:true});
+  const cmdKey = shortCut.value.replace(/Ctrl/ig, 'CommandOrControl');
+  let short = Object.assign(toRaw(props.element), { cmd:cmdKey, isOpen:val, flag:true});
   sendShortcut(short);
 }
 
@@ -61,19 +69,13 @@ const changeSwitch = (val)=>{
     <div style="width: 250px;"> {{ element.tag }}</div>
     <div>
       <n-input-group>
-        <n-select
-            :style="{ width: '30%' }"
-            size="small"
-            :options="selectOptions"
-            v-model:value="vleft"
-            @update:value="handleUpdateValue"
-        />+
         <n-input
-            :style="{ width: '40%' }"
+            :style="{ width: '90%' }"
             size="small"
             readonly
-            v-model:value="vright"
+            v-model:value="shortCut"
             @keydown="handleKeydown"
+            @keyup="handleKeyup"
         />
       </n-input-group>
     </div>
@@ -93,6 +95,7 @@ const changeSwitch = (val)=>{
 <style scoped>
 .wrap {
   padding: 0.5em;
+  margin-left: 10px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;

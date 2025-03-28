@@ -1,11 +1,15 @@
 <script setup>
-defineProps({
+const props = defineProps({
     element: Object
 })
+
+const handleClick = () => {
+  window.myApi.openSite(toRaw(props.element));
+}
 </script>
 
 <template>
-  <div class="wrap">
+  <div class="wrap" @click="handleClick">
     <n-avatar
         round
         size="large"
@@ -19,7 +23,7 @@ defineProps({
 .wrap {
   width: 80px;
   height: 80px;
-
+  cursor: pointer;
   margin-top: 10px;
   margin-left: 10px;
   display: flex;

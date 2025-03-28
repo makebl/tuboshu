@@ -86,6 +86,19 @@ const handleSaveJsCode = (element) => {
   window.myApi.updateMenu(toRaw(element));
 };
 
+const handleExportConfig = async () => {
+  const ret = window.myApi.exportConfig();
+  if(ret === true){
+    message.success('导出站点文件成功');
+  }
+};
+
+const handleImportConfig = async () => {
+  const ret = await window.myApi.importConfig();
+  message.success(`成功导入${ret}个站点`);
+  await initData();
+};
+
 </script>
 
 <template>
@@ -109,6 +122,10 @@ const handleSaveJsCode = (element) => {
           </template>
           新增站点
         </n-button>
+
+        <n-button @click="handleExportConfig" class="export-btn">导出</n-button>
+        <n-button @click="handleImportConfig" class="import-btn">导入</n-button>
+
       </div>
       <div class="box-card" v-auto-height="{ offset: 20}">
         <div class="wrap">
@@ -141,9 +158,17 @@ const handleSaveJsCode = (element) => {
 }
 
 .box-title{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
   font-size: 15px;
   padding: 0.5em;
   border-bottom: 1px solid var(--new-color-border);
   background-color: var(--color-background-mute);
 }
+.export-btn{
+  margin-left: auto;
+}
+
 </style>

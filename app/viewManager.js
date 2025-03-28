@@ -65,7 +65,7 @@ class ViewManager {
         view.webContents.setZoomLevel(0)
         view.webContents.setUserAgent(userAgent.ua)
         Utility.alterRequestHeader(view)
-        Utility.alterResponseHeader(view)
+        // Utility.alterResponseHeader(view)
 
         if(isRemoteAddr){
             this.injectJsCode(view, name);

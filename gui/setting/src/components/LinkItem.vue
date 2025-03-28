@@ -27,6 +27,13 @@ const options = [
 ];
 
 const emit = defineEmits(['edit', 'remove', 'jsEditor'])
+
+
+const handleClickOpenSite = ()=>{
+  if(!props.element.isOpen) return;
+  window.myApi.openSite(toRaw(props.element));
+};
+
 const handleSelect = (key) => {
    if(key === 'modify'){
       emit('edit', props.element)
@@ -74,11 +81,10 @@ const handleClickGetIcon = ()=>{
 <template>
   <div class="wrap">
     <n-image width="40" :src="icon"/>
-    <div class="link">
+    <div class="link" @click="handleClickOpenSite">
       <div> {{ element.tag }}</div>
       <div> {{ element.url }}</div>
     </div>
-
 
     <div class="getIcon">
       <span @click="handleClickGetIcon">
@@ -128,6 +134,7 @@ const handleClickGetIcon = ()=>{
   gap: 10px;
 }
 .link{
+  cursor: pointer;
   font-size: 14px;
   color: var(--color-text);
 }

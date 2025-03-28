@@ -6,6 +6,8 @@ const storeManager = require('./store/storeManager');
 const eventManager = require('./eventManager');
 const fetchIcon = require('./utility/fetchIcon');
 const CONS = require('./constants');
+const dataExport = require('./utility/dataExport');
+
 
 const Layout = require("./utility/layout");
 class WindowManager{
@@ -29,13 +31,12 @@ class WindowManager{
 
     createWindow() {
         const winSize = Layout.getWinSize();
-        const emptyMenu = Menu.buildFromTemplate([])
-        Menu.setApplicationMenu(emptyMenu)
-
+        // const emptyMenu = Menu.buildFromTemplate([])
+        // Menu.setApplicationMenu(emptyMenu)
         const win = new BaseWindow({
             width: winSize.width,
             height: winSize.height,
-            autoHideMenuBar: false,
+            autoHideMenuBar: true,
             show:false,
             icon: CONS.PATH.APP_PATH+'/icon.ico',
             webPreferences: {
@@ -44,6 +45,9 @@ class WindowManager{
                 backgroundThrottling: false
             }
         })
+
+        win.setAutoHideMenuBar(true);
+        win.setMenuBarVisibility(false);
 
         const menuView = new WebContentsView({
             webPreferences: {
@@ -77,6 +81,8 @@ class WindowManager{
     }
 
     bindIpcMain(){
+        dataExport.bindExportIpc();
+        dataExport.bindImportIpc();
 
         //获取侧边栏配置
         ipcMain.handle('get:menu', async (event, ...args) => {
@@ -129,6 +135,10 @@ class WindowManager{
                 this.webView.addChildView(view)
             }
         })
+
+        ipcMain.on('open:site', (event, site) => {
+            this.menuView.webContents.send('auto:click', site);
+        });
 
         //右键直接赋值文本
         ipcMain.on('copy:text', (event, text) => {
