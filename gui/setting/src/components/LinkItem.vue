@@ -80,7 +80,7 @@ const handleClickGetIcon = ()=>{
 
 <template>
   <div class="wrap">
-    <n-image width="40" :src="icon"/>
+    <n-avatar round width="40" :src="icon"/>
     <div class="link" @click="handleClickOpenSite">
       <div> {{ element.tag }}</div>
       <div> {{ element.url }}</div>
@@ -124,7 +124,6 @@ const handleClickGetIcon = ()=>{
 <style scoped>
 .wrap {
   background-color: var(--color-background);
-  margin: 10px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -176,9 +175,9 @@ const handleClickGetIcon = ()=>{
 }
 
 .switch{
-  text-align: center;
+  text-align: right;
   vertical-align: center;
-  width: 100px;
+  width: 80px;
   flex-shrink: 0;
 }
 

@@ -14,7 +14,7 @@ onMounted(async () => {
     </n-alert>
 
     <n-alert :show-icon="false">
-      1.快捷键不区分大小写,先按住Ctrl键，再按其它快捷键；<br>
+      1.🌐标记为全局快捷键，程序失去焦点后也能使用。<br>
       2.在macOS系统：Ctrl === Command键，Alt === Option键；<br>
       3.自定义快捷键时，先获取焦点，然后在输入框中按其它快捷键；<br>
     </n-alert>

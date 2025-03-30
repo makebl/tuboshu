@@ -1,12 +1,14 @@
-const { app, globalShortcut, screen} = require('electron');
-const windowManager = require('./windowManager');
-const trayManager = require('./trayManager');
-const viewManager = require('./viewManager');
-const lokiManager = require('./store/lokiManager');
-const storeManager = require('./store/storeManager');
-const eventManager = require('./eventManager');
-const Layout = require('./utility/layout');
-const CONS = require('./constants');
+const { app, screen} = require('electron');
+const windowManager = require('../windowManager');
+const trayManager = require('../trayManager');
+const viewManager = require('../viewManager');
+const lokiManager = require('../store/lokiManager');
+const storeManager = require('../store/storeManager');
+const eventManager = require('../eventManager');
+const shortcutBase = require('./shortcutBase');
+const Layout = require('../utility/layout');
+const CONS = require('../constants');
+
 
 
 // 在 Electron 中，你可以通过简单的字符串组合来定义一系列的快捷键。
@@ -33,13 +35,14 @@ class ShortcutManager{
     constructor() {}
 
     initShortcuts(){
+        this.resetShortcutsData();
         lokiManager.then((manager) => {
             manager.getShortcuts().forEach((shortcut) => {
                 if(shortcut.isOpen === false){
                     return;
                 }
-                if(!globalShortcut.isRegistered(shortcut.cmd)){
-                    globalShortcut.register(shortcut.cmd, this[shortcut.name].bind(this))
+                if(!shortcutBase.isRegistered(shortcut.cmd)){
+                    shortcutBase.register(shortcut.cmd, this[shortcut.name].bind(this), shortcut.isGlobal)
                 }
             })
         })
@@ -56,30 +59,29 @@ class ShortcutManager{
         });
         this.openDevTools();
         this.forceSystemExit();
-        this.unfiledPatchCorrection();
     }
 
     isDisableShortcuts(shortcut){
         //禁用快捷键
-        if((shortcut.isOpen === false) && globalShortcut.isRegistered(shortcut.cmd)){
-            globalShortcut.unregister(shortcut.cmd)
+        if((shortcut.isOpen === false) && shortcutBase.isRegistered(shortcut.cmd)){
+            shortcutBase.unregister(shortcut.cmd)
             return true;
         }
 
         //启用快捷键
-        if(shortcut.isOpen === true && !globalShortcut.isRegistered(shortcut.cmd)){
-            globalShortcut.register(shortcut.cmd, this[shortcut.name].bind(this))
+        if(shortcut.isOpen === true && !shortcutBase.isRegistered(shortcut.cmd)){
+            shortcutBase.register(shortcut.cmd, this[shortcut.name].bind(this))
             return true;
         }
         return true;
     }
 
     updateShortcut(shortcut, oldShortcut){
-        if(globalShortcut.isRegistered(shortcut.cmd)){
+        if(shortcutBase.isRegistered(shortcut.cmd)){
             return false;
         }
-        globalShortcut.unregister(oldShortcut.cmd)
-        globalShortcut.register(shortcut.cmd, this[shortcut.name].bind(this))
+        shortcutBase.unregister(oldShortcut.cmd)
+        shortcutBase.register(shortcut.cmd, this[shortcut.name].bind(this))
         return true;
     }
 
@@ -131,6 +133,10 @@ class ShortcutManager{
         if(view) view.object.webContents.reload();
     }
 
+    reloadHomepage(){
+        viewManager.refreshActiveView()
+    }
+
     windowMinimize(){
         let win = windowManager.getWindow();
         if(win.isMaximized()) win.unmaximize();
@@ -170,19 +176,24 @@ class ShortcutManager{
         windowManager.handleResize();
     }
 
-    unfiledPatchCorrection(){
+    resetShortcutsData(){
         lokiManager.then((manager) => {
-            const shortcuts = manager.getShortcuts().map(item => item.name);
-            CONS.SHORTCUT.map(item => {
-                if(!shortcuts.includes(item.name)){
+            CONS.SHORTCUT.forEach(item => {
+                const shortCut = manager.getShortcut(item.name);
+                if(!shortCut){
                     manager.addShortcut(item);
+                }else{
+                    if(!shortCut.hasOwnProperty('isGlobal')){
+                        shortCut.isGlobal = item.isGlobal;
+                        manager.updateShortcut(shortCut);
+                    }
                 }
             })
         })
     }
 
     openDevTools(){
-        globalShortcut.register('CommandOrControl+Shift+I', () => {
+        shortcutBase.register('CommandOrControl+Shift+I', () => {
             const view = viewManager.getActiveView();
             if(view.object.webContents.isDevToolsOpened()){
                 view.object.webContents.closeDevTools();
@@ -193,7 +204,7 @@ class ShortcutManager{
     }
 
     forceSystemExit(){
-        globalShortcut.register('CommandOrControl+Shift+Q', () => {
+        shortcutBase.register('CommandOrControl+Shift+Q', () => {
             app.exit()
         });
     }
@@ -205,7 +216,7 @@ class ShortcutManager{
     }
 
     destroy(){
-        globalShortcut.unregisterAll();
+        shortcutBase.unregisterAll();
     }
 }
 

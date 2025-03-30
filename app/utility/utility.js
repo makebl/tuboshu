@@ -73,6 +73,57 @@ class Utility {
             callback({ responseHeaders: details.responseHeaders });
         });
     }
+
+
+    static loadURLWithTimeout(view, url, timeoutMs) {
+        return new Promise((resolve, reject) => {
+            const timeoutId = setTimeout(() => {
+                view.webContents.stop();
+                reject(new Error("连接超时，请检查网络配置"));
+                cleanup();
+            }, timeoutMs);
+
+            const cleanup = () => {
+                clearTimeout(timeoutId);
+                view.webContents.removeListener('did-finish-load', onLoad);
+                view.webContents.removeListener('did-fail-load', onError);
+            };
+
+            const onLoad = () => {
+                resolve();
+                cleanup();
+            };
+
+            const onError = (event, errorCode, errorDesc) => {
+                reject(new Error(`${errorDesc} (code ${errorCode})`));
+                cleanup();
+            };
+
+            view.webContents.on('did-finish-load', onLoad);
+            view.webContents.on('did-fail-load', onError);
+
+            view.webContents.loadURL(url).catch((err) => {
+                reject(err);
+                cleanup();
+            });
+        });
+    }
+
+    static async loadWithLoading(view, url, timeout = 10000) {
+        await view.webContents.loadFile('gui/loading.html');
+        try {
+            await Utility.loadURLWithTimeout(view, url, timeout);
+        } catch (err) {
+            await view.webContents.executeJavaScript(`
+              document.querySelector('.loader').style.display = 'none';
+              const errorDiv = document.querySelector('.error');
+              const reloadDiv = document.querySelector('.reload');
+              errorDiv.style.display = 'block';
+              errorDiv.textContent = '加载失败: ${err.message}';
+              reloadDiv.style.display = 'block';
+        `);
+        }
+    }
 }
 
 module.exports = {

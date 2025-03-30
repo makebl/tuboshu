@@ -1,6 +1,6 @@
 {
   "name": "tuboshu",
-  "version": "v1.3.5",
+  "version": "v1.3.6",
   "main": "app/main.js",
   "scripts": {
     "start:debug": "electron --enable-logging --log-file=electron.log --trace-warnings .",

@@ -84,6 +84,10 @@ class WindowManager{
         dataExport.bindExportIpc();
         dataExport.bindImportIpc();
 
+        ipcMain.handle('refresh:self', async (event, ...args) => {
+            viewManager.refreshActiveView();
+        });
+
         //获取侧边栏配置
         ipcMain.handle('get:menu', async (event, ...args) => {
             const manager = await lokiManager;
@@ -216,20 +220,18 @@ class WindowManager{
             try {
                 const manager = await lokiManager;
                 const site = manager.getSite(name);
-                
-                const hostname = Utility.getHostName(site.url)
-                let iconData= storeManager.get(hostname)
 
+                let iconData= storeManager.get(site.url)
                 if (!iconData) {
                     const faviconUrl = await fetchIcon.getFaviconUrl(site.url);
                     iconData = await fetchIcon.fetchFaviconAsBase64(faviconUrl);
                 }
 
                 manager.updateSite(Object.assign(site, {img: iconData}))
-                storeManager.set(hostname, iconData);
+                storeManager.set(site.url, iconData);
+
                 this.menuView.webContents.reload();
                 return {ret:0, data:iconData};
-
             } catch (error) {
                 return {ret:1, data:'获取失败:'+ error};
             }

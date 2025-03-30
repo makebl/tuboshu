@@ -1,4 +1,8 @@
 const { contextBridge, ipcRenderer} = require('electron');
+
+contextBridge.exposeInMainWorld('myApi', {
+    refreshSelf: () => ipcRenderer.invoke('refresh:self'),
+})
 ipcRenderer.on('open:window', (event, url) => {
     window.location.href = url;
 });

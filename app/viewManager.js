@@ -22,6 +22,28 @@ class ViewManager {
         return false;
     }
 
+    removeView(name) {
+        for (let i = 0; i < this.views.length; i++) {
+            if (this.views[i].name === name.toLowerCase()) {
+                this.views.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    refreshActiveView(){
+        const activeView = this.getActiveView();
+        if(!activeView.url.toLowerCase().startsWith("http")) return;
+
+        Utility.loadWithLoading(activeView.object, activeView.url).then(()=>{
+            eventManager.emit('set:title', activeView.object.webContents.getTitle());
+        }).catch((error)=>{
+            console.log('error', error);
+            setTimeout(()=> this.refreshActiveView(), 1000)
+        })
+    }
+
     getActiveView() {
         return this.views.find(view => view.object.getVisible());
     }
@@ -52,13 +74,14 @@ class ViewManager {
         let preloadjs = isRemoteAddr ? "web.js" : "setting.js";
         if(url.includes("localhost")) preloadjs = "setting.js"
 
-        let view = new WebContentsView({webPreferences: {
-            sandbox: true,
-            webSecurity: true,
-            nodeIntegration: false,
-            contextIsolation: true,
-            partition: partitionName,
-            preload: CONS.PATH.APP_PATH + '/app/preload/'+ preloadjs
+        let view = new WebContentsView({
+            webPreferences: {
+                sandbox: true,
+                webSecurity: true,
+                nodeIntegration: false,
+                contextIsolation: true,
+                partition: partitionName,
+                preload: CONS.PATH.APP_PATH + '/app/preload/'+ preloadjs
         }})
 
         this.renderProcessGone(view);
@@ -70,10 +93,8 @@ class ViewManager {
         if(isRemoteAddr){
             this.injectJsCode(view, name);
             this.setProxy(mySession, name).then(()=>{
-                view.webContents.loadURL(url).then(()=>{
+                Utility.loadWithLoading(view, url).then(()=>{
                     eventManager.emit('set:title', view.webContents.getTitle());
-                }).catch(err => {
-                    console.error('Failed to load URL:', err);
                 })
             });
         }else{
@@ -115,16 +136,16 @@ class ViewManager {
             }
         })
 
-        // view.webContents.on('did-finish-load',async ()=>{
-        //     try {
-        //         const jsCode = Utility.getInjectPluginJsCode();
-        //         if(!jsCode){
-        //             await view.webContents.executeJavaScript(jsCode);
-        //         }
-        //     }catch (e){
-        //         console.error('error:', e);
-        //     }
-        // })
+        view.webContents.on('did-finish-load',async ()=>{
+            // try {
+            //     const jsCode = Utility.getInjectPluginJsCode();
+            //     if(jsCode){
+            //         await view.webContents.executeJavaScript(jsCode);
+            //     }
+            // }catch (e){
+            //     console.error('error:', e);
+            // }
+        })
     }
 
     async setProxy(mySession, name) {
@@ -139,7 +160,7 @@ class ViewManager {
 
     renderProcessGone(view){
         view.webContents.on('render-process-gone', (event, details) => {
-            console.error('渲染进程崩溃:', details.reason);
+            console.error('test:渲染进程崩溃:', details.reason);
             if (!view.webContents.isDestroyed()) view.webContents.reload();
         });
     }

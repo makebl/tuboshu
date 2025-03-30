@@ -95,8 +95,10 @@ const handleExportConfig = async () => {
 
 const handleImportConfig = async () => {
   const ret = await window.myApi.importConfig();
-  message.success(`成功导入${ret}个站点`);
   await initData();
+  if(ret != null){
+    message.success(`成功导入${ret}个站点`);
+  }
 };
 
 </script>
