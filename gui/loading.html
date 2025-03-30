@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loading...</title>
+    <style>
+        .loader {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            padding: 20px;
+        }
+        .reload{
+            color: #181818;
+            font-size: 18px;
+            text-align: center;
+            padding: 20px;
+        }
+        .reload-btn {
+            padding: 6px 12px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .reload-btn:hover {
+            background-color: #e5e5e5;
+        }
+
+        .reload-btn:active {
+            background-color: #d9d9d9;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            const reload = document.querySelector('#reloadUrl');
+            reload.addEventListener('click', function () {
+                window.myApi.refreshSelf();
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="loader"></div>
+    <div class="error" style="display: none;"></div>
+    <div class="reload" style="display: none;">
+        <button id="reloadUrl" class="reload-btn">重新加载</button>
+    </div>
+</body>
+</html>

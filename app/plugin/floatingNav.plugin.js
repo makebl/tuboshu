@@ -202,7 +202,7 @@ class Tuboshu_FloatingNav {
             flex-direction: column;
             transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             will-change: transform;
-            z-index: 1000;
+            z-index: 99999999;
             cursor: move;
             background: rgba(0, 0, 0, 0.8);
             border-radius: 8px;

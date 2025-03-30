@@ -1,7 +1,7 @@
 const { app, crashReporter} = require('electron')
 const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
-const shortcutManager = require('./shortcutManager');
+const shortcutManager = require('./shortcut/shortcutManager');
 
 // app.disableHardwareAcceleration();
 //app.commandLine.appendSwitch('disable-gpu');

@@ -66,7 +66,7 @@ const changeSwitch = (val)=>{
 
 <template>
   <div class="wrap">
-    <div style="width: 250px;"> {{ element.tag }}</div>
+    <div style="width: 250px;"><span v-if="element.isGlobal">🌐</span>{{ element.tag }}</div>
     <div>
       <n-input-group>
         <n-input
@@ -109,9 +109,9 @@ const changeSwitch = (val)=>{
 }
 
 .switch{
-  text-align: center;
+  text-align: right;
   vertical-align: center;
-  width: 100px;
+  width: 80px;
   margin-left: auto;
   flex-shrink: 0;
 }
