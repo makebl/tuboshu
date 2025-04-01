@@ -1,4 +1,4 @@
-const { app, crashReporter} = require('electron')
+const { app} = require('electron')
 const windowManager = require('./windowManager');
 const trayManager = require('./trayManager');
 const shortcutManager = require('./shortcut/shortcutManager');
@@ -12,14 +12,7 @@ app.commandLine.appendSwitch('ignore-certificate-errors');
 
 app.commandLine.appendSwitch("disable-features", "WebRtcHideLocalIpsWithMdns");
 app.commandLine.appendSwitch("force-webrtc-ip-handling-policy", "disable_non_proxied_udp");
-
-
-// crashReporter.start({
-//   productName: 'Tuboshu',
-//   companyName: 'Tuboshu',
-//   submitURL: '',
-//   uploadToServer: false,
-// });
+app.commandLine.appendSwitch('lang', 'zh-CN');
 
 app.isQuitting = false;
 const singleLock = app.requestSingleInstanceLock();

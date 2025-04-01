@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer} = require('electron');
 
 contextBridge.exposeInMainWorld('myApi', {
-    refreshSelf: () => ipcRenderer.invoke('refresh:self'),
+    refreshSelf: () => ipcRenderer.invoke('refresh:self')
 })
 ipcRenderer.on('open:window', (event, url) => {
     window.location.href = url;
@@ -39,3 +39,11 @@ document.addEventListener('wheel', (event) => {
         ipcRenderer.send('zoom:wheel', delta);
     }
 }, { passive: false });
+
+document.addEventListener('fullscreenchange', async () => {
+    if (document.fullscreenElement) {
+        await ipcRenderer.invoke('handle:menu', true)
+    } else {
+        await ipcRenderer.invoke('handle:menu', false)
+    }
+});

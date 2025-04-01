@@ -37,7 +37,9 @@ onMounted(async () => {
 <style scoped>
 .box{
   margin-top: 1rem;
-  border: 1px solid var(--new-color-border);;
+  border: 1px solid var(--new-color-border);
+  min-width: 600px;
+  overflow: hidden;
 }
 
 .box-card{

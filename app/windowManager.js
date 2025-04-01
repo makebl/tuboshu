@@ -1,4 +1,4 @@
-const { app, BaseWindow, View, screen, ipcMain, clipboard, WebContentsView, Menu, nativeTheme } = require('electron')
+const { app, BaseWindow, View, screen, ipcMain, clipboard, WebContentsView, nativeTheme } = require('electron')
 const { Utility } = require("./utility/utility");
 const viewManager = require('./viewManager');
 const lokiManager = require('./store/lokiManager');
@@ -7,9 +7,8 @@ const eventManager = require('./eventManager');
 const fetchIcon = require('./utility/fetchIcon');
 const CONS = require('./constants');
 const dataExport = require('./utility/dataExport');
-
-
 const Layout = require("./utility/layout");
+
 class WindowManager{
 
     isAdjusting = false;
@@ -30,9 +29,8 @@ class WindowManager{
     }
 
     createWindow() {
+        
         const winSize = Layout.getWinSize();
-        // const emptyMenu = Menu.buildFromTemplate([])
-        // Menu.setApplicationMenu(emptyMenu)
         const win = new BaseWindow({
             width: winSize.width,
             height: winSize.height,
@@ -45,9 +43,6 @@ class WindowManager{
                 backgroundThrottling: false
             }
         })
-
-        win.setAutoHideMenuBar(true);
-        win.setMenuBarVisibility(false);
 
         const menuView = new WebContentsView({
             webPreferences: {
@@ -83,6 +78,16 @@ class WindowManager{
     bindIpcMain(){
         dataExport.bindExportIpc();
         dataExport.bindImportIpc();
+
+        ipcMain.handle('handle:menu', async (event, hide) => {
+            if(hide === true){
+                storeManager.set('isMenuVisible', 0);
+                this.handleResize();
+            }else{
+                storeManager.set('isMenuVisible', 1);
+                this.handleResize();
+            }
+        })
 
         ipcMain.handle('refresh:self', async (event, ...args) => {
             viewManager.refreshActiveView();

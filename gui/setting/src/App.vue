@@ -7,7 +7,6 @@ const theme = ref('null');
 // 检测系统主题
 const checkTheme = () => {
   const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  console.log('isDark', isDark);
   theme.value = isDark ? darkTheme : null;
 };
 
@@ -27,9 +26,7 @@ onUnmounted(() => {
 
 </script>
 
-
 <template>
-
   <n-message-provider>
   <div id="left">
     <n-config-provider :theme="theme">
@@ -46,7 +43,8 @@ onUnmounted(() => {
 
 </template>
 
-
 <style scoped>
-
+#right{
+  overflow: hidden;
+}
 </style>

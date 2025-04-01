@@ -148,6 +148,8 @@ const handleImportConfig = async () => {
   margin-top: 1rem;
   flex: 1;
   border: 1px solid var(--new-color-border);
+  min-width: 600px;
+  overflow: hidden;
 }
 
 .box-card{

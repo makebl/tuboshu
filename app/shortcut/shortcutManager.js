@@ -57,6 +57,7 @@ class ShortcutManager{
                 resolve(res);
             }
         });
+
         this.openDevTools();
         this.forceSystemExit();
     }
@@ -103,6 +104,9 @@ class ShortcutManager{
 
     softwareSiteSwitch(){
         const view = viewManager.getActiveView();
+        const menuView = windowManager.getMenuView();
+        menuView.webContents.focus();
+
         lokiManager.then((manager) => {
             const openMenus = manager.getMenus().openMenus;
             let idx = openMenus.findIndex(item => item.name === view.name);
@@ -208,8 +212,6 @@ class ShortcutManager{
             app.exit()
         });
     }
-
-
 
     unregisterAll(){
         this.destroy();

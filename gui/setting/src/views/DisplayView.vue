@@ -29,7 +29,6 @@ function updateCloseMenu(evt) {
 
 <template>
 
-
   <div id="content-main">
     <n-alert :show-icon="false" type="info" style="margin-bottom: 1rem;">
       <n-h3 style="margin-bottom: 0;">移动排序</n-h3>
