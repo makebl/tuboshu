@@ -63,6 +63,13 @@ jobs:
         if: ${{ !env.pnpm }}
         run: npm install -g pnpm
 
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
