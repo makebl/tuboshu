@@ -1,8 +1,8 @@
-const {app, nativeImage} = require("electron");
-const crypto = require('crypto');
-const path = require('path');
-const Loki = require('lokijs');
-const CONS = require('../constants');
+import {app, nativeImage} from 'electron'
+import crypto from 'crypto'
+import path from 'path'
+import Loki from 'sylviejs'
+import CONS from '../constants.js'
 
 const dbPath = path.join(app.getPath('userData'),  'data.db');
 const md5Hash = (data) => crypto.createHash('md5').update(data).digest('hex');
@@ -137,4 +137,4 @@ class LokiManager {
 }
 
 // 使用方式
-module.exports = LokiManager.create();
+export default LokiManager.create();

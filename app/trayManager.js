@@ -1,6 +1,6 @@
-const { Tray, Menu, app, shell} = require('electron');
-const CONS = require('./constants');
-const windowManager = require('./windowManager');
+import { Tray, Menu, app, shell} from 'electron'
+import CONS from './constants.js'
+import windowManager from './windowManager.js'
 
 function createTray() {
     const tray = new Tray(CONS.PATH.APP_PATH + '/icon.ico');
@@ -40,7 +40,7 @@ function toggleWindow() {
     win.isVisible() ? win.hide():win.show();
 }
 
-module.exports = {
+export default {
     createTray,
     toggleWindow,
     reallyQuitApp,

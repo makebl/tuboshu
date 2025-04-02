@@ -1,13 +1,13 @@
-const { app, screen} = require('electron');
-const windowManager = require('../windowManager');
-const trayManager = require('../trayManager');
-const viewManager = require('../viewManager');
-const lokiManager = require('../store/lokiManager');
-const storeManager = require('../store/storeManager');
-const eventManager = require('../eventManager');
-const shortcutBase = require('./shortcutBase');
-const Layout = require('../utility/layout');
-const CONS = require('../constants');
+import { app, screen} from 'electron'
+import windowManager from '../windowManager.js'
+import trayManager from '../trayManager.js'
+import viewManager from '../viewManager.js'
+import lokiManager from '../store/lokiManager.js'
+import storeManager from '../store/storeManager.js'
+import eventManager from '../eventManager.js'
+import shortcutBase from './shortcutBase.js'
+import Layout from '../utility/layout.js'
+import CONS from '../constants.js'
 
 
 
@@ -222,4 +222,4 @@ class ShortcutManager{
     }
 }
 
-module.exports = new ShortcutManager();
+export default new ShortcutManager();

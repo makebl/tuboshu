@@ -1,9 +1,9 @@
-const { WebContentsView, shell, session} = require('electron')
-const { Utility } = require('./utility/utility');
-const eventManager = require('./eventManager');
-const lokiManager = require('./store/lokiManager');
-const CONS = require('./constants');
-const userAgent = require('./disguise/userAgent');
+import { WebContentsView, shell, session} from 'electron'
+import eventManager from './eventManager.js'
+import lokiManager from './store/lokiManager.js'
+import CONS from './constants.js'
+import userAgent from './disguise/userAgent.js'
+import Utility from "./utility/utility.js";
 
 class ViewManager {
     constructor() {
@@ -167,4 +167,4 @@ class ViewManager {
 
 }
 
-module.exports = new ViewManager();
+export default new ViewManager();

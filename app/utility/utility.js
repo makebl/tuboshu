@@ -1,20 +1,26 @@
-const tld = require('tldjs');
-const { readFileSync, readdirSync } = require('fs');
-const { join } = require('path');
-const userAgent = require('./../disguise/userAgent');
+import { readFileSync, readdirSync } from 'fs'
+import { URL, fileURLToPath } from 'url'
+import path from 'path'
+import userAgent from './../disguise/userAgent.js'
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname =  path.dirname(__filename);
+const getDomain = (url) => {
+    try {
+        const hostname = new URL(url.toLowerCase()).hostname;
+        const parts = hostname.split('.');
+        return parts.slice(-2).join('.');
+    } catch (error) {
+        return null;
+    }
+}
 
 class Utility {
-
-    constructor() {
-    }
-
+    constructor() {}
     static isMainDomainEqual (url1, url2) {
-        return tld.getDomain(url1.toLowerCase()) === tld.getDomain(url2.toLowerCase());
+        return getDomain(url1) === getDomain(url2);
     }
 
-    static getHostName (url) {
-        return tld.parse(url.toLowerCase()).hostname
-    }
     static appendJsCode(code) {
         return `(function() {
             try {
@@ -28,7 +34,7 @@ class Utility {
     }
 
     static getInjectPluginJsCode() {
-        const pluginDir = join(__dirname, './../plugin');
+        const pluginDir = path.join(__dirname, './../plugin');
         const jsFiles = readdirSync(pluginDir)
             .filter(file => file.endsWith('.plugin.js'))
             .sort();
@@ -126,9 +132,7 @@ class Utility {
     }
 }
 
-module.exports = {
-    Utility
-}
+export default Utility
 
 
 

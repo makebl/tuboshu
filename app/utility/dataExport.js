@@ -1,7 +1,8 @@
-const {dialog, ipcMain, app} = require('electron');
-const lokiManager = require('./../store/lokiManager');
-const path = require('path');
-const fs = require('fs').promises;
+import {dialog, ipcMain, app} from 'electron'
+import path from 'path'
+import fs from 'fs/promises';
+import lokiManager from './../store/lokiManager.js'
+
 
 
 class DataExport {
@@ -92,4 +93,4 @@ class DataExport {
     }
 }
 
-module.exports = new DataExport();
+export default new DataExport();

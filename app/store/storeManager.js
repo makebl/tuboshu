@@ -1,6 +1,7 @@
-const Conf = require('conf');
-const CONS = require('./../constants')
-const {app} = require("electron");
+import {app} from "electron"
+import Conf from 'conf'
+import CONS from './../constants.js'
+
 
 class StoreManager{
     constructor() {
@@ -33,4 +34,4 @@ class StoreManager{
     }
 }
 
-module.exports = new StoreManager()
+export default new StoreManager()

@@ -1,4 +1,4 @@
-const { app, globalShortcut, Menu } = require('electron')
+import { app, globalShortcut, Menu } from 'electron'
 
 class ShortcutBase {
     constructor() {
@@ -148,4 +148,4 @@ class ShortcutBase {
     }
 }
 
-module.exports = new ShortcutBase()
+export default new ShortcutBase()

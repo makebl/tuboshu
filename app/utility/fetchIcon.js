@@ -1,5 +1,5 @@
-const { BrowserWindow, net, ipcMain } = require('electron');
-const { URL } = require('url');
+import { BrowserWindow, net } from 'electron'
+import { URL } from 'url'
 
 async function getFaviconUrl(pageUrl) {
     return new Promise((resolve, reject) => {
@@ -133,7 +133,7 @@ function getWebFaviconJs() {
         `
 }
 
-module.exports = {
+export default {
     getFaviconUrl,
     fetchFaviconAsBase64
 }

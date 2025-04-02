@@ -1,4 +1,4 @@
-const {EventEmitter} = require("events");
+import {EventEmitter} from 'events'
 class EventManager extends EventEmitter{
     constructor() {
         super();
@@ -11,4 +11,4 @@ class EventManager extends EventEmitter{
     }
 }
 
-module.exports = new EventManager();
+export default new EventManager();

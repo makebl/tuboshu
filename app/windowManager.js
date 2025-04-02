@@ -1,13 +1,12 @@
-const { app, BaseWindow, View, screen, ipcMain, clipboard, WebContentsView, nativeTheme } = require('electron')
-const { Utility } = require("./utility/utility");
-const viewManager = require('./viewManager');
-const lokiManager = require('./store/lokiManager');
-const storeManager = require('./store/storeManager');
-const eventManager = require('./eventManager');
-const fetchIcon = require('./utility/fetchIcon');
-const CONS = require('./constants');
-const dataExport = require('./utility/dataExport');
-const Layout = require("./utility/layout");
+import { app, BaseWindow, View, screen, ipcMain, clipboard, WebContentsView, nativeTheme } from 'electron'
+import viewManager from './viewManager.js'
+import lokiManager from './store/lokiManager.js'
+import storeManager from './store/storeManager.js'
+import eventManager from './eventManager.js'
+import fetchIcon from './utility/fetchIcon.js'
+import CONS from './constants.js'
+import dataExport from './utility/dataExport.js'
+import Layout from "./utility/layout.js"
 
 class WindowManager{
 
@@ -48,6 +47,7 @@ class WindowManager{
             webPreferences: {
                 nodeIntegration: false,
                 contextIsolation: true,
+                devTools: true,
                 preload: CONS.PATH.APP_PATH +'/app/preload/navigate.js'
             }
         });
@@ -186,12 +186,6 @@ class WindowManager{
         //新增左边导航栏
         ipcMain.on('add:menu', async (event, menu) => {
             const manager = await lokiManager;
-            if(menu.img.endsWith("AAAAASUVORK5CYII=")){
-                const hostname = Utility.getHostName(menu.url)
-                const iconData = storeManager.get(hostname);
-                if(iconData) menu.img = iconData;
-            }
-
             manager.addSite(menu);
             this.closeHideSites();
             this.menuView.webContents.reload();
@@ -381,4 +375,4 @@ class WindowManager{
     }
 }
 
-module.exports = new WindowManager();
+export default new WindowManager();

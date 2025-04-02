@@ -1,4 +1,4 @@
-const storeManager = require('./../store/storeManager');
+import storeManager from './../store/storeManager.js'
 class Layout {
 
     constructor() {
@@ -49,4 +49,4 @@ class Layout {
     }
 }
 
-module.exports = new Layout();
+export default new Layout();

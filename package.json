@@ -2,6 +2,7 @@
   "name": "tuboshu",
   "version": "v1.3.7",
   "main": "app/main.js",
+  "type": "module",
   "scripts": {
     "start:debug": "electron --enable-logging --log-file=electron.log --trace-warnings .",
     "start": "electron .",
@@ -15,13 +16,12 @@
   "license": "ISC",
   "description": "tuboshu",
   "devDependencies": {
-    "electron": "^34.2.0",
-    "electron-builder": "^25.1.8"
+    "electron": "^35.1.2",
+    "electron-builder": "^26.0.12"
   },
   "dependencies": {
-    "conf": "10.2.0",
-    "lokijs": "^1.5.12",
-    "tldjs": "^2.3.1"
+    "conf": "^13.1.0",
+    "sylviejs": "^0.0.19"
   },
   "build": {
     "appId": "com.tuboshu.tuboshu",

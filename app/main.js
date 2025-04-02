@@ -1,7 +1,7 @@
-const { app} = require('electron')
-const windowManager = require('./windowManager');
-const trayManager = require('./trayManager');
-const shortcutManager = require('./shortcut/shortcutManager');
+import { app} from 'electron'
+import windowManager from './windowManager.js'
+import trayManager from'./trayManager.js'
+import shortcutManager from './shortcut/shortcutManager.js'
 
 // app.disableHardwareAcceleration();
 //app.commandLine.appendSwitch('disable-gpu');

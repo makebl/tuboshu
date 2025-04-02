@@ -1,4 +1,4 @@
-const os = require('os');
+import os from 'os'
 
 class UserAgent {
     constructor() {
@@ -68,4 +68,4 @@ class UserAgent {
     }
 }
 
-module.exports = new UserAgent();
+export default new UserAgent();
