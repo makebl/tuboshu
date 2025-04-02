@@ -7,6 +7,7 @@ const isMemoryOptimizationEnabled = ref(false)
 const systemTheme = ref("system")
 const leftMenuPosition = ref('left')
 const isMenuVisible = ref(true)
+const isOpenDevTools = ref(false)
 const defaultWindowSize = ref({width: 800, height: 600})
 
 const version = ref({
@@ -58,6 +59,7 @@ onMounted(async () => {
   leftMenuPosition.value = getValue('leftMenuPosition', settings);
   systemTheme.value = getValue('systemTheme', settings);
   isMenuVisible.value = getValue('isMenuVisible', settings);
+  isOpenDevTools.value = getValue('isOpenDevTools', settings);
   defaultWindowSize.value = getValue('defaultWindowSize', settings);
 })
 
@@ -77,6 +79,11 @@ const changeOptimize = async (val) => {
 
 const changeMenuVisible = (val) => {
   window.myApi.updateSetting({ name : 'isMenuVisible', value: val ? 1 : 0});
+  message.success(`设置已更新,请重新启动`)
+}
+
+const changeDevTools = (val) => {
+  window.myApi.updateSetting({ name : 'isOpenDevTools', value: val ? 1 : 0});
   message.success(`设置已更新,请重新启动`)
 }
 
@@ -155,6 +162,18 @@ const handleWinChange = (e) => {
                        :style="{ width: '20%' }"
                        placeholder="height" />
             </n-input-group>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="vleft">调试模式：</div>
+          <div class="vright">
+            <n-switch size="medium"
+                      v-model:value="isOpenDevTools"
+                      @update:value="changeDevTools" style="font-size:12px;" >
+              <template #checked>开启</template>
+              <template #unchecked>关闭</template>
+            </n-switch>
           </div>
         </div>
 

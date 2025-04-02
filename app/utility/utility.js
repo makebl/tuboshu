@@ -51,16 +51,16 @@ class Utility {
         return combinedCode;
     }
 
-    static alterRequestHeader(view){
+    static alterRequestHeader(view, headers){
         const platform = userAgent.getPlatformInfo();
         const session = view.webContents.session;
         session.webRequest.onBeforeSendHeaders(null);
         session.webRequest.onBeforeSendHeaders((details, callback) => {
-            const domains = ['google', 'grok', 'x.ai', 'cloudflare'];
+            const domains = ['google'];
             if(domains.some(domain => details.url.toLowerCase().includes(domain))){
-                details.requestHeaders['User-Agent'] = `Mozilla/5.0 ${platform} AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.6834.210 Electron/34.3.2 Safari/537.36`;
+                headers['user-agent'] = `Mozilla/5.0 ${platform} AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.6834.210 Electron/34.3.2 Safari/537.36`;
             }
-            callback({ requestHeaders: details.requestHeaders });
+            callback({ requestHeaders: Object.assign(details.requestHeaders, headers)});
         });
     }
 

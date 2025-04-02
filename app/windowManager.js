@@ -213,6 +213,9 @@ class WindowManager{
             if (setting.name === "isMemoryOptimizationEnabled"){
                 this.uselessSiteCleaner();
             }
+            if (setting.name === "isOpenDevTools"){
+                this.closeHideSites();
+            }
         });
 
         ipcMain.handle('get:favicon', async (event, name) => {
@@ -246,7 +249,7 @@ class WindowManager{
         })
 
         this.window.on('move', () => {
-            const res = storeManager .getSetting('isWindowEdgeAdsorption');
+            const res = storeManager.getSetting('isWindowEdgeAdsorption');
             if(!res) return;
             this.handleMove();
         });

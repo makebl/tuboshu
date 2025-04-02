@@ -7,12 +7,14 @@ import shortcutManager from './shortcut/shortcutManager.js'
 //app.commandLine.appendSwitch('disable-gpu');
 //app.commandLine.appendSwitch('disable-webrtc');
 app.commandLine.appendSwitch('disable-software-rasterizer');
-app.commandLine.appendSwitch('disable-extensions');
 app.commandLine.appendSwitch('ignore-certificate-errors');
 
 app.commandLine.appendSwitch("disable-features", "WebRtcHideLocalIpsWithMdns");
 app.commandLine.appendSwitch("force-webrtc-ip-handling-policy", "disable_non_proxied_udp");
 app.commandLine.appendSwitch('lang', 'zh-CN');
+
+app.commandLine.appendSwitch('disable-blink-features', 'AutomationControlled')
+app.commandLine.appendSwitch('disable-features', 'IsolateOrigins,site-per-process')
 
 app.isQuitting = false;
 const singleLock = app.requestSingleInstanceLock();

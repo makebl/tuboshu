@@ -1,6 +1,6 @@
 {
   "name": "tuboshu",
-  "version": "v1.3.7",
+  "version": "v1.3.8",
   "main": "app/main.js",
   "type": "module",
   "scripts": {
@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "conf": "^13.1.0",
+    "fingerprint-generator": "^2.1.63",
     "sylviejs": "^0.0.19"
   },
   "build": {

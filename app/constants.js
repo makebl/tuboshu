@@ -20,6 +20,7 @@ export default Object.freeze({
         isWindowEdgeAdsorption: 1,
         isMemoryOptimizationEnabled:1,
         isMenuVisible:1,
+        isOpenDevTools:0,
         systemTheme:'system'
     },
 

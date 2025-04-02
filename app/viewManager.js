@@ -3,7 +3,9 @@ import eventManager from './eventManager.js'
 import lokiManager from './store/lokiManager.js'
 import CONS from './constants.js'
 import userAgent from './disguise/userAgent.js'
+import fingerPrint from "./disguise/fingerPrint.js";
 import Utility from "./utility/utility.js";
+import storeManager from "./store/storeManager.js";
 
 class ViewManager {
     constructor() {
@@ -86,11 +88,22 @@ class ViewManager {
 
         this.renderProcessGone(view);
         view.webContents.setZoomLevel(0)
-        view.webContents.setUserAgent(userAgent.ua)
-        Utility.alterRequestHeader(view)
-        // Utility.alterResponseHeader(view)
+
+        if(storeManager.getSetting('isOpenDevTools')){
+            view.webContents.openDevTools({
+                mode: 'right',
+                activate: true
+            })
+        }
 
         if(isRemoteAddr){
+
+            if(!url.includes("localhost")){
+                const {fingerprint, headers} = fingerPrint.getFinger();
+                Utility.alterRequestHeader(view, headers)
+                // Utility.alterResponseHeader(view)
+            }
+
             this.injectJsCode(view, name);
             this.setProxy(mySession, name).then(()=>{
                 Utility.loadWithLoading(view, url).then(()=>{
