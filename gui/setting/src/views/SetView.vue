@@ -8,6 +8,7 @@ const systemTheme = ref("system")
 const leftMenuPosition = ref('left')
 const isMenuVisible = ref(true)
 const isOpenDevTools = ref(false)
+const isOpenZoom = ref(true)
 const defaultWindowSize = ref({width: 800, height: 600})
 
 const version = ref({
@@ -60,6 +61,7 @@ onMounted(async () => {
   systemTheme.value = getValue('systemTheme', settings);
   isMenuVisible.value = getValue('isMenuVisible', settings);
   isOpenDevTools.value = getValue('isOpenDevTools', settings);
+  isOpenZoom.value = getValue('isOpenZoom', settings);
   defaultWindowSize.value = getValue('defaultWindowSize', settings);
 })
 
@@ -84,6 +86,11 @@ const changeMenuVisible = (val) => {
 
 const changeDevTools = (val) => {
   window.myApi.updateSetting({ name : 'isOpenDevTools', value: val ? 1 : 0});
+  message.success(`设置已更新,请重新启动`)
+}
+
+const changeZoom= (val) => {
+  window.myApi.updateSetting({ name : 'isOpenZoom', value: val ? 1 : 0});
   message.success(`设置已更新,请重新启动`)
 }
 
@@ -196,6 +203,18 @@ const handleWinChange = (e) => {
             <n-switch size="medium"
               v-model:value="isMemoryOptimizationEnabled"
               @update:value="changeOptimize" style="font-size:12px;" >
+              <template #checked>开启</template>
+              <template #unchecked>关闭</template>
+            </n-switch>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="vleft">页面缩放：</div>
+          <div class="vright">
+            <n-switch size="medium"
+                      v-model:value="isOpenZoom"
+                      @update:value="changeZoom" style="font-size:12px;" >
               <template #checked>开启</template>
               <template #unchecked>关闭</template>
             </n-switch>

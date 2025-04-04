@@ -1,4 +1,4 @@
-import { WebContentsView, shell, session} from 'electron'
+import {WebContentsView, shell, session, ipcMain} from 'electron'
 import eventManager from './eventManager.js'
 import lokiManager from './store/lokiManager.js'
 import CONS from './constants.js'
@@ -41,7 +41,6 @@ class ViewManager {
         Utility.loadWithLoading(activeView.object, activeView.url).then(()=>{
             eventManager.emit('set:title', activeView.object.webContents.getTitle());
         }).catch((error)=>{
-            console.log('error', error);
             setTimeout(()=> this.refreshActiveView(), 1000)
         })
     }
@@ -65,10 +64,16 @@ class ViewManager {
 
     createNewView(url, name) {
         if (this.isExist(name)) {
-            this.activeView(name)
+            const activeView = this.getActiveView();
+            if(activeView.name === name){
+                this.refreshActiveView();
+            }else{
+                this.activeView(name)
+            }
             return null;
         }
 
+        const {fingerprint, headers} = fingerPrint.getFinger();
         const partitionName = 'persist:' + name;
         const mySession = session.fromPartition(partitionName);
 
@@ -83,6 +88,7 @@ class ViewManager {
                 nodeIntegration: false,
                 contextIsolation: true,
                 partition: partitionName,
+                additionalArguments: ['--name', JSON.stringify(fingerprint)],
                 preload: CONS.PATH.APP_PATH + '/app/preload/'+ preloadjs
         }})
 
@@ -97,12 +103,8 @@ class ViewManager {
         }
 
         if(isRemoteAddr){
-
-            if(!url.includes("localhost")){
-                const {fingerprint, headers} = fingerPrint.getFinger();
-                Utility.alterRequestHeader(view, headers)
-                // Utility.alterResponseHeader(view)
-            }
+            Utility.alterRequestHeader(view, headers)
+            //Utility.alterResponseHeader(view)
 
             this.injectJsCode(view, name);
             this.setProxy(mySession, name).then(()=>{

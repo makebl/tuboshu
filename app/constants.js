@@ -21,6 +21,7 @@ export default Object.freeze({
         isMemoryOptimizationEnabled:1,
         isMenuVisible:1,
         isOpenDevTools:0,
+        isOpenZoom:1,
         systemTheme:'system'
     },
 

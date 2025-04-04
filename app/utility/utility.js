@@ -1,7 +1,6 @@
 import { readFileSync, readdirSync } from 'fs'
 import { URL, fileURLToPath } from 'url'
 import path from 'path'
-import userAgent from './../disguise/userAgent.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname =  path.dirname(__filename);
@@ -52,13 +51,14 @@ class Utility {
     }
 
     static alterRequestHeader(view, headers){
-        const platform = userAgent.getPlatformInfo();
         const session = view.webContents.session;
         session.webRequest.onBeforeSendHeaders(null);
+
         session.webRequest.onBeforeSendHeaders((details, callback) => {
-            const domains = ['google'];
+            const domains = ['google', 'douyin', 'localhost'];
             if(domains.some(domain => details.url.toLowerCase().includes(domain))){
-                headers['user-agent'] = `Mozilla/5.0 ${platform} AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.6834.210 Electron/34.3.2 Safari/537.36`;
+                callback({ requestHeaders: details.requestHeaders});
+                return;
             }
             callback({ requestHeaders: Object.assign(details.requestHeaders, headers)});
         });

@@ -89,6 +89,10 @@ class WindowManager{
             }
         })
 
+        ipcMain.handle('handle:zoom', async (event) => {
+            return storeManager.getSetting('isOpenZoom');
+        });
+
         ipcMain.handle('refresh:self', async (event, ...args) => {
             viewManager.refreshActiveView();
         });
@@ -135,7 +139,6 @@ class WindowManager{
             this.window.setTitle(data);
         });
 
-        //跳转页面
         ipcMain.on('reload:url', (event, url, name) => {
             let view = viewManager.createNewView(url, name)
             if(view !== null){
@@ -149,7 +152,6 @@ class WindowManager{
             this.menuView.webContents.send('auto:click', site);
         });
 
-        //右键直接赋值文本
         ipcMain.on('copy:text', (event, text) => {
             clipboard.writeText(text);
         });
@@ -157,7 +159,6 @@ class WindowManager{
         ipcMain.on('zoom:wheel', (event, delta) => {
             const view = viewManager.getActiveView();
             let zoomLevel = view.object.webContents.getZoomLevel();
-
             if (delta > 0) {
                 zoomLevel -= 0.5;
             } else if (delta < 0) {

@@ -88,11 +88,6 @@ class ShortcutBase {
                 label: app.name,
                 submenu: [
                     { role: 'about' },
-                    { type: 'separator' },
-                    { role: 'hide' },
-                    { role: 'hideOthers' },
-                    { role: 'unhide' },
-                    { type: 'separator' },
                     { role: 'quit' }
                 ]
             })
@@ -112,7 +107,11 @@ class ShortcutBase {
                 { role: 'copy' },
                 { role: 'paste' },
                 { role: 'selectAll' },
-                { type: 'separator' }
+                { type: 'separator' },
+                { role: 'togglefullscreen'},
+                { role: 'resetZoom' },
+                { role: 'zoomIn' },
+                { role: 'zoomOut' }
             ]
         }
 
@@ -123,7 +122,7 @@ class ShortcutBase {
 
         this.localShortcuts.forEach((callback, accelerator) => {
             shortcutsMenu.submenu.push({
-                label: `Custom: ${accelerator}`,
+                label: `${accelerator}`,
                 accelerator,
                 click: callback
             })
@@ -136,8 +135,6 @@ class ShortcutBase {
                 role: 'window',
                 submenu: [
                     { role: 'minimize' },
-                    { role: 'zoom' },
-                    { type: 'separator' },
                     { role: 'front' }
                 ]
             })

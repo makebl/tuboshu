@@ -57,8 +57,6 @@ class ShortcutManager{
                 resolve(res);
             }
         });
-
-        this.openDevTools();
         this.forceSystemExit();
     }
 
@@ -194,17 +192,6 @@ class ShortcutManager{
                 }
             })
         })
-    }
-
-    openDevTools(){
-        shortcutBase.register('CommandOrControl+Shift+I', () => {
-            const view = viewManager.getActiveView();
-            if(view.object.webContents.isDevToolsOpened()){
-                view.object.webContents.closeDevTools();
-            }else{
-                view.object.webContents.openDevTools({mode: 'detach'});
-            }
-        });
     }
 
     forceSystemExit(){
