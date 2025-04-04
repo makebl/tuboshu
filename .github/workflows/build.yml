@@ -108,7 +108,5 @@ jobs:
           name: Release ${{ github.ref_name }}
           files: |
             artifacts/**/*
-            !artifacts/**/*.yml
-            !artifacts/**/*.blockmap
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
