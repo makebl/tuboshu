@@ -1,8 +1,8 @@
-const { contextBridge, ipcRenderer}  = require('electron');
+const { contextBridge, ipcRenderer, webFrame}  = require('electron');
 
-// const args = process.argv;
-// const index = args.indexOf('--name');
-// const fingerPrint = JSON.parse(index !== -1 ? args[index + 2] : null);
+const args = process.argv;
+const index = args.indexOf('--name');
+const fingerPrint = JSON.parse(index !== -1 ? args[index + 2] : null);
 
 //
 // Object.defineProperties(navigator, {
@@ -13,20 +13,49 @@ const { contextBridge, ipcRenderer}  = require('electron');
 //     webdriver: {get:()=> fingerPrint.navigator.webdriver},
 //     platform: {get:()=> fingerPrint.navigator.platform}
 // })
-// Object.defineProperties(screen, {
-//     width:{value: fingerPrint.screen.width},
-//     height:{value: fingerPrint.screen.height},
-// })
-//
-// Object.defineProperty(navigator, 'appVersion', {
-//     value: fingerPrint.navigator.appVersion
-// })
-// Object.defineProperty(navigator, 'userAgent', {
-//     value: fingerPrint.navigator.userAgent
-// })
-// Object.defineProperty(navigator, 'userAgentData', {
-//     value: fingerPrint.navigator.userAgentData
-// })
+
+
+(async ()=>{
+    await webFrame.executeJavaScript(`
+Object.defineProperties(screen, {
+    width: { value: ${fingerPrint.screen.width} },
+    height: { value: ${fingerPrint.screen.height} }
+});
+
+Object.defineProperty(navigator, 'appVersion', {
+    value: "${fingerPrint.navigator.appVersion}"
+});
+Object.defineProperty(navigator, 'userAgent', {
+    value: "${fingerPrint.navigator.userAgent}"
+});
+Object.defineProperty(navigator, 'userAgentData', {
+    value: ${JSON.stringify(fingerPrint.navigator.userAgentData)}
+});
+`)
+})()
+
+window.addEventListener('DOMContentLoaded', async () => {
+    await webFrame.executeJavaScript(`
+// const topDiv = document.createElement('div');
+// topDiv.id = 'top-layer-div';
+// topDiv.textContent = '这是动态生成的顶层 DIV';
+// Object.assign(topDiv.style, {
+//   position: 'fixed',
+//   top: '0',
+//   left: '0',
+//   width: '100%',
+//   zIndex: '9999',
+//   backgroundColor: 'white',
+//   padding: '20px',
+// });
+// document.body.appendChild(topDiv);
+// new FloatingNav({
+//     background: '#ccc',
+//     buttonBackground: '#e3f2fd',
+//     buttonHover: '#bbdefb',
+// });
+    `);
+})
 
 
 contextBridge.exposeInMainWorld('myApi', {
@@ -35,7 +64,7 @@ contextBridge.exposeInMainWorld('myApi', {
 ipcRenderer.on('open:window', (event, url) => {
     window.location.href = url;
 });
-window.addEventListener('DOMContentLoaded', () => {})
+
 
 window.addEventListener('contextmenu', (e) => {
     e.preventDefault();

@@ -1,6 +1,8 @@
-import { readFileSync, readdirSync } from 'fs'
+import { readFile, readdir } from 'fs/promises';
 import { URL, fileURLToPath } from 'url'
 import path from 'path'
+import requestJson from './requestTool.js'
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname =  path.dirname(__filename);
@@ -20,6 +22,24 @@ class Utility {
         return getDomain(url1) === getDomain(url2);
     }
 
+    static async fetchVersionLatest() {
+        const url = "https://upsort.com/tuboshu";
+        const res =  await requestJson({url})
+        return res.data.version;
+    }
+
+
+    static async loadExtensions(view) {
+        const sess = view.webContents.session;
+        const extensionsDir = path.join(__dirname, './../ext');
+        const extensionFolders = await readdir(extensionsDir);
+        for (const folder of extensionFolders) {
+            const extPath = path.join(extensionsDir, folder);
+            await sess.loadExtension(extPath);
+        }
+        return true;
+    }
+
     static appendJsCode(code) {
         return `(function() {
             try {
@@ -32,17 +52,17 @@ class Utility {
         })();`
     }
 
-    static getInjectPluginJsCode() {
+    static async getInjectPluginJsCode() {
         const pluginDir = path.join(__dirname, './../plugin');
-        const jsFiles = readdirSync(pluginDir)
+        const jsFiles = await readdir(pluginDir)
             .filter(file => file.endsWith('.plugin.js'))
             .sort();
 
         let combinedCode = '';
         for (const file of jsFiles) {
             try {
-                const filePath = join(pluginDir, file);
-                combinedCode += readFileSync(filePath, 'utf-8');
+                const filePath = path.join(pluginDir, file);
+                combinedCode += await readFile(filePath, 'utf-8');
             } catch (err) {
                 console.error(`fail ${file}:`, err);
             }
@@ -55,12 +75,17 @@ class Utility {
         session.webRequest.onBeforeSendHeaders(null);
 
         session.webRequest.onBeforeSendHeaders((details, callback) => {
-            const domains = ['google', 'douyin', 'localhost'];
+            const domains = ['google'];
             if(domains.some(domain => details.url.toLowerCase().includes(domain))){
                 callback({ requestHeaders: details.requestHeaders});
                 return;
             }
-            callback({ requestHeaders: Object.assign(details.requestHeaders, headers)});
+            details.requestHeaders['user-agent'] = headers['user-agent'];
+            details.requestHeaders['sec-ch-ua'] = headers['sec-ch-ua'];
+            // details.requestHeaders['upgrade-insecure-requests'] = headers['upgrade-insecure-requests'];
+            // details.requestHeaders[' accept'] = headers[' accept'];
+            callback({ requestHeaders: details.requestHeaders });
+            //callback({ requestHeaders: Object.assign(details.requestHeaders, headers)});
         });
     }
 

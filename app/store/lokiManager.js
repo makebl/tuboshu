@@ -41,7 +41,6 @@ class LokiManager {
     initializeCollections(){
         if (!this.db.getCollection('sites')) {
             const sitesCollection = this.db.addCollection('sites', { indices: ['name'], unique: ['name'] });
-
             if (sitesCollection.count() === 0) {
                 sitesCollection.insert(CONS.SITES);
                 this.db.saveDatabase();
@@ -50,11 +49,14 @@ class LokiManager {
 
         if (!this.db.getCollection('shortcuts')) {
             const sitesCollection = this.db.addCollection('shortcuts', { indices: ['name'], unique: ['name'] });
-
             if (sitesCollection.count() === 0) {
                 sitesCollection.insert(CONS.SHORTCUT);
                 this.db.saveDatabase();
             }
+        }
+
+        if (!this.db.getCollection('groups')) {
+            this.db.addCollection('groups', { indices: ['name'], unique: ['name'] });
         }
     }
 
@@ -113,6 +115,18 @@ class LokiManager {
         }
     }
 
+    getGroupMenus(){
+        const menus = this.getMenus();
+        const group = this.getOpenGroup();
+        if(group) {
+            const webs = group.sites.split(',').filter(Boolean);
+            const listMap = new Map();
+            menus.openMenus.forEach(item => {listMap.set(item.name, item);});
+            menus.openMenus = webs.map(name => listMap.get(name)).filter(Boolean);
+        }
+        return menus;
+    }
+
     getShortcuts() {
         const shortcutCollection = this.db.getCollection('shortcuts');
         return shortcutCollection.chain().find({}).simplesort('isOpen', { desc: true }).data();
@@ -132,6 +146,40 @@ class LokiManager {
     addShortcut(shortcut) {
         const shortcutCollection = this.db.getCollection('shortcuts');
         shortcutCollection.insert(shortcut);
+        return this.db.saveDatabase();
+    }
+
+    getGroups() {
+        const groupsCollection = this.db.getCollection('groups');
+        return groupsCollection.chain().find({}).data();
+    }
+    updateGroup(group) {
+        const groupsCollection = this.db.getCollection('groups');
+        if(!group.name || !groupsCollection.findOne({name: group.name})){
+            group.name = md5Hash(String(Date.now()));
+            groupsCollection.insert(group);
+            return this.db.saveDatabase();
+        }
+
+        if(group.isOpen === true){
+            const results = groupsCollection.find({ isOpen: true });
+            results.forEach(doc => {
+                doc.isOpen = false;
+                groupsCollection.update(doc)
+            })
+        }
+        groupsCollection.findAndUpdate({name: group.name}, (doc)=>{Object.assign(doc, group)});
+        return this.db.saveDatabase();
+    }
+
+    getOpenGroup() {
+        const groupsCollection = this.db.getCollection('groups');
+        return groupsCollection.findOne({isOpen: true});
+    }
+
+    removeGroup(group) {
+        const groupsCollection = this.db.getCollection('groups');
+        groupsCollection.findAndRemove({name: group.name});
         return this.db.saveDatabase();
     }
 }

@@ -269,8 +269,11 @@ const handleWinChange = (e) => {
     </n-card>
 
     <n-card embedded :bordered="true" style="margin-top: 20px;">
-        <span style="padding-right: 20px;">
-          当前版本: <n-tag :bordered="false" type="info" size="medium">{{version.version}}</n-tag>
+      <span style="padding-right: 20px;">
+        当前版本: <n-tag :bordered="false" type="info" size="medium">{{version.version}}</n-tag>
+      </span>
+      <span style="padding-right: 20px;">
+          最新版本: <n-tag :bordered="false" type="info" size="medium">{{version.newVersion}}</n-tag>
         </span>
       <span>
           获取新版：<n-tag :bordered="false" type="info" size="medium"><a target="_blank" href="https://github.com/deepshit2025/tuboshu/releases">点击下载</a></n-tag>

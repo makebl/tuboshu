@@ -9,6 +9,10 @@ const menuOptions = [
     key: 'list',
   },
   {
+    label: () => h(RouterLink, {to: {name: 'group'}}, { default: () => '站点分组' }),
+    key: 'group',
+  },
+  {
     label: () => h(RouterLink, {to: {name: 'display'}}, { default: () => '站点排序' }),
     key: 'display',
   },
@@ -27,7 +31,7 @@ const menuOptions = [
 
 ]
 function handleUpdateValue(key, item){
-  console.log('update value', key, item)
+  // console.log('update value', key, item)
 }
 
 </script>

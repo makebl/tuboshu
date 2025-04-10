@@ -233,9 +233,6 @@ class Tuboshu_FloatingNav {
     }
 }
 
-new Tuboshu_FloatingNav({
-    background: '#ccc',
-    buttonBackground: '#e3f2fd',
-    buttonHover: '#bbdefb',
-});
+
+
 

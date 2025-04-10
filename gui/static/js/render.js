@@ -1,5 +1,5 @@
 window.addEventListener('DOMContentLoaded', () => {
-    window.myApi.getConfig().then(config => {
+    window.myApi.getGroupMenus().then(config => {
         updateMenu(config.openMenus, 'nav-box');
         updateMenu(config.setMenus, 'set-box');
 

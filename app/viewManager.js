@@ -2,7 +2,6 @@ import {WebContentsView, shell, session, ipcMain} from 'electron'
 import eventManager from './eventManager.js'
 import lokiManager from './store/lokiManager.js'
 import CONS from './constants.js'
-import userAgent from './disguise/userAgent.js'
 import fingerPrint from "./disguise/fingerPrint.js";
 import Utility from "./utility/utility.js";
 import storeManager from "./store/storeManager.js";
@@ -81,12 +80,13 @@ class ViewManager {
         let preloadjs = isRemoteAddr ? "web.js" : "setting.js";
         if(url.includes("localhost")) preloadjs = "setting.js"
 
-        let view = new WebContentsView({
+        const view = new WebContentsView({
             webPreferences: {
                 sandbox: true,
                 webSecurity: true,
                 nodeIntegration: false,
                 contextIsolation: true,
+                dnsPrefetch: false,
                 partition: partitionName,
                 additionalArguments: ['--name', JSON.stringify(fingerprint)],
                 preload: CONS.PATH.APP_PATH + '/app/preload/'+ preloadjs
@@ -96,10 +96,7 @@ class ViewManager {
         view.webContents.setZoomLevel(0)
 
         if(storeManager.getSetting('isOpenDevTools')){
-            view.webContents.openDevTools({
-                mode: 'right',
-                activate: true
-            })
+            view.webContents.openDevTools({mode: 'right',activate: true})
         }
 
         if(isRemoteAddr){
@@ -123,8 +120,8 @@ class ViewManager {
                 view.webContents.send('open:window', details.url)
                 return { action: 'deny' };
             }
-            shell.openExternal(details.url).finally();
-            return { action: 'deny' };
+            //shell.openExternal(details.url).finally();
+            return { action: 'allow' };
         })
 
         this.views.forEach(view => {
@@ -150,17 +147,6 @@ class ViewManager {
                 await view.webContents.executeJavaScript(code);
             }
         })
-
-        view.webContents.on('did-finish-load',async ()=>{
-            // try {
-            //     const jsCode = Utility.getInjectPluginJsCode();
-            //     if(jsCode){
-            //         await view.webContents.executeJavaScript(jsCode);
-            //     }
-            // }catch (e){
-            //     console.error('error:', e);
-            // }
-        })
     }
 
     async setProxy(mySession, name) {
@@ -175,7 +161,7 @@ class ViewManager {
 
     renderProcessGone(view){
         view.webContents.on('render-process-gone', (event, details) => {
-            console.error('test:渲染进程崩溃:', details.reason);
+            console.error('The rendering process has crashed:', details.reason);
             if (!view.webContents.isDestroyed()) view.webContents.reload();
         });
     }

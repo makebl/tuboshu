@@ -7,6 +7,7 @@ import fetchIcon from './utility/fetchIcon.js'
 import CONS from './constants.js'
 import dataExport from './utility/dataExport.js'
 import Layout from "./utility/layout.js"
+import Utility from "./utility/utility.js";
 
 class WindowManager{
 
@@ -97,11 +98,16 @@ class WindowManager{
             viewManager.refreshActiveView();
         });
 
-        //获取侧边栏配置
         ipcMain.handle('get:menu', async (event, ...args) => {
             const manager = await lokiManager;
             return manager.getMenus()
         });
+
+        ipcMain.handle('get:groupMenus', async (e) => {
+            const manager = await lokiManager;
+            return manager.getGroupMenus()
+        });
+
 
         ipcMain.handle('get:shortcuts', async (event, ...args) => {
             const manager = await lokiManager;
@@ -127,8 +133,10 @@ class WindowManager{
             }
         });
 
-        ipcMain.handle('get:version', () => {
+        ipcMain.handle('get:version', async () => {
+           const newVersion = await Utility.fetchVersionLatest()
            return {
+               newVersion: newVersion,
                version: app.getVersion(),
                electron: process.versions.electron,
                chrome: process.versions.chrome
@@ -199,6 +207,25 @@ class WindowManager{
             this.menuView.webContents.reload();
             this.closeHideSites();
         });
+
+        ipcMain.handle('get:groups', async () => {
+            const manager = await lokiManager;
+            return manager.getGroups()
+        })
+
+        ipcMain.handle('update:group', async (event, group) => {
+            const manager = await lokiManager;
+            manager.updateGroup(group)
+            this.menuView.webContents.reload();
+            return true;
+        })
+
+        ipcMain.handle('remove:group', async (event, group) => {
+            const manager = await lokiManager;
+            manager.removeGroup(group)
+            this.menuView.webContents.reload();
+            return true;
+        })
 
         ipcMain.on('update:setting', (event, setting) => {
             storeManager.updateSetting(setting)

@@ -129,7 +129,6 @@ class ShortcutBase {
         })
 
         template.push(fileMenu, editMenu, shortcutsMenu)
-
        if (process.platform === 'darwin') {
             template.push({
                 role: 'window',

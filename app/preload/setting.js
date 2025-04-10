@@ -9,6 +9,9 @@ contextBridge.exposeInMainWorld('myApi', {
     getSettings: () => ipcRenderer.invoke('get:settings'),
     getFavicon: (name) => ipcRenderer.invoke('get:favicon', name),
     openSite: (site) => ipcRenderer.send('open:site', site),
+    getGroups: () => ipcRenderer.invoke('get:groups'),
+    updateGroup: (group) => ipcRenderer.invoke('update:group', group),
+    removeGroup: (group) => ipcRenderer.invoke('remove:group', group),
 
     updateShortcut: (shortcut) => ipcRenderer.invoke('update:shortcut', shortcut),
     updateMenu: (menu) => ipcRenderer.send('update:menu', menu),
