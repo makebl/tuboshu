@@ -112,6 +112,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           name: Release ${{ github.ref_name }}
+          overwrite: true
           files: |
             artifacts/**/*.exe
             artifacts/**/*.dmg
