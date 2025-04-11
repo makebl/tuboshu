@@ -177,6 +177,15 @@ class LokiManager {
         return groupsCollection.findOne({isOpen: true});
     }
 
+    resetGroup() {
+        const groupsCollection = this.db.getCollection('groups');
+        const results = groupsCollection.find({ isOpen: true });
+        results.forEach(doc => {
+            doc.isOpen = false;
+            groupsCollection.update(doc)
+        })
+    }
+
     removeGroup(group) {
         const groupsCollection = this.db.getCollection('groups');
         groupsCollection.findAndRemove({name: group.name});

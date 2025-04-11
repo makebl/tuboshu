@@ -73,9 +73,10 @@ const handleSaveForm = async (data)=>{
 
       <div class="box-card" v-auto-height="{ offset: 20}">
         <div class="wrap">
-          <template v-for="element in listData">
+          <template v-for="element in listData"  v-if="listData && listData.length > 0">
             <GroupItem :element="element" :list="list" @edit="handleEdit" @remove="handleRemove" @change="handleSaveForm" />
           </template>
+          <div v-else style="color: #888;font-size:14px;">没有分组数据</div>
         </div>
       </div>
 
@@ -89,7 +90,7 @@ const handleSaveForm = async (data)=>{
   margin-top: 1rem;
   flex: 1;
   border: 1px solid var(--new-color-border);
-  min-width: 600px;
+  min-width: 500px;
   overflow: hidden;
 }
 .box-title{

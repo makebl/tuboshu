@@ -43,15 +43,24 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Get pnpm store path
+        id: pnpm-store
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+
       - name: Cache Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
-            ~/.pnpm-store
+            ${{ env.STORE_PATH }}
             node_modules
             ~/.cache/electron
             ~/.cache/electron-builder
@@ -59,11 +68,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
-      - name: Install pnpm (Fallback)
-        if: ${{ !env.pnpm }}
-        run: npm install -g pnpm
-
       - name: Setup SSH
+        shell: bash
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
@@ -74,7 +80,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Electron App
-        run: pnpm run build -- --${{ matrix.platform }} --${{ matrix.arch }}
+        run: pnpm run build -- --platform ${{ matrix.platform }} --arch ${{ matrix.arch }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -102,11 +108,14 @@ jobs:
         with:
           path: artifacts
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref }}
           name: Release ${{ github.ref_name }}
           files: |
-            artifacts/**/*
+            artifacts/**/*.exe
+            artifacts/**/*.dmg
+            artifacts/**/*.AppImage
+            artifacts/**/*.deb
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

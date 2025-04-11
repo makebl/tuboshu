@@ -134,10 +134,12 @@ class WindowManager{
         });
 
         ipcMain.handle('get:version', async () => {
-           const newVersion = await Utility.fetchVersionLatest()
+           const data = await Utility.fetchVersionLatest()
            return {
-               newVersion: newVersion,
                version: app.getVersion(),
+               newVersion: data.version,
+               github: data.github,
+               download: data.download,
                electron: process.versions.electron,
                chrome: process.versions.chrome
            }
@@ -284,7 +286,6 @@ class WindowManager{
 
         this.window.on('focus', () => {
             this.handleResize();
-            console.log('focus...')
         });
 
         //窗口准备销毁，阻止默认事件
@@ -358,7 +359,14 @@ class WindowManager{
     }
 
     gotoSetting(){
-        this.menuView.webContents.send('auto:click', CONS.SETTING[0]);
+        lokiManager.then((manager) => {
+            const menu = manager.getGroupMenus();
+            if(menu.openMenus.length > 0){
+                this.menuView.webContents.send('auto:click', menu.openMenus[0]);
+            }else{
+                this.menuView.webContents.send('auto:click', menu.setMenus[0]);
+            }
+        })
     }
 
     uselessSiteCleaner(){

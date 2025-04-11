@@ -5,7 +5,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="wrap">
+  <div class="wrap-box">
     <n-avatar
         round
         size="10"
@@ -16,8 +16,8 @@ const props = defineProps({
 </template>
 
 <style scoped>
-.wrap {
-  padding: 2px;
+.wrap-box {
+  padding: 5px;
   width: 50px;
   height: 50px;
   overflow: hidden;
@@ -28,6 +28,7 @@ const props = defineProps({
   place-items: center;
   background-color: var(--color-background);
   border: 1px solid var(--color-border);
+  flex-shrink: 0;
 }
 
 .name{
@@ -42,8 +43,8 @@ const props = defineProps({
 
 }
 
-.wrap:hover {
-  background-color: var(--color-background-soft);
+.wrap-box:hover {
+  background-color: var(--color-background-mute);
 }
 
 </style>

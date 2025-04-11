@@ -1,5 +1,5 @@
 <script setup>
-import iconOptions from "./icons/options.vue"
+import iconOptions from "./icons/options1.vue"
 import draggable from "vuedraggable"
 
 import {onMounted} from "vue";
@@ -76,7 +76,7 @@ const changeGroup = async (e)=>{
 </script>
 
 <template>
-  <div class="wrap">
+  <div class="wrapper">
     <div class="title">
       <div class="tag_name">{{ element.tag }}</div>
       <div class="operate">
@@ -110,14 +110,14 @@ const changeGroup = async (e)=>{
 </template>
 
 <style scoped>
-.wrap {
-  background-color: var(--color-background);
+.wrapper {
+  background-color: var(--color-background-soft);
   border: 1px solid var(--color-border);
   margin-bottom: 10px;
 }
 
-.wrap:hover {
-  background-color: var(--color-background-soft);
+.wrapper:hover {
+  background-color: var(--color-background-mute);
 }
 
 .title{
@@ -125,12 +125,16 @@ const changeGroup = async (e)=>{
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  background-color: var(--color-background-soft);
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 5px;
+  border-bottom: 1px dashed var(--color-border);
+  padding: 2px 10px;
+}
+.box{
+  padding: 10px;
+  overflow-x: auto;
 }
 .tag_name{
-
+  font-size: 14px;
+  font-weight: bold;
 }
 .operate{
   margin-left: auto;
@@ -141,6 +145,9 @@ const changeGroup = async (e)=>{
 }
 
 .operate span{
+  display: inline-block;
+  padding-top:5px;
+  width: 20px;
   cursor: pointer;
 }
 
@@ -151,16 +158,13 @@ const changeGroup = async (e)=>{
   flex-shrink: 0;
 }
 
-.box{
-  //margin-top: 1rem;
-  //border: 1px solid var(--color-border);
-}
+
 .list-group{
+  min-height: 60px;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
   align-content: center;
   gap: 5px;
-  padding-top:5px;
 }
 </style>

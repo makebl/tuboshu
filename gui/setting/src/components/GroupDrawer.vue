@@ -44,9 +44,9 @@ const handleSave = async () => {
   if (!tag.value) {
     return message.error("分组名称不能为空");
   }
-  if ((list2.value.length === 0)) {
-    return message.error("分组下的站点不能为空");
-  }
+  // if ((list2.value.length === 0)) {
+  //   return message.error("分组下的站点不能为空");
+  // }
 
   try{
     const sites = list2.value.map(item => item.name);

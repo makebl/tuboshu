@@ -78,7 +78,7 @@ class ViewManager {
 
         const isRemoteAddr = url.toLowerCase().startsWith("http");
         let preloadjs = isRemoteAddr ? "web.js" : "setting.js";
-        if(url.includes("localhost")) preloadjs = "setting.js"
+        if(url.includes("http://localhost:")) preloadjs = "setting.js"
 
         const view = new WebContentsView({
             webPreferences: {
@@ -99,21 +99,23 @@ class ViewManager {
             view.webContents.openDevTools({mode: 'right',activate: true})
         }
 
-        if(isRemoteAddr){
-            Utility.alterRequestHeader(view, headers)
-            //Utility.alterResponseHeader(view)
+        Utility.alterRequestHeader(view, headers)
+        //Utility.alterResponseHeader(view)
 
-            this.injectJsCode(view, name);
-            this.setProxy(mySession, name).then(()=>{
-                Utility.loadWithLoading(view, url).then(()=>{
-                    eventManager.emit('set:title', view.webContents.getTitle());
-                })
-            });
-        }else{
-            view.webContents.loadFile(url).then(() => {
+        this.injectJsCode(view, name);
+        this.setProxy(mySession, name).then(()=>{
+            Utility.loadWithLoading(view, url).then(()=>{
                 eventManager.emit('set:title', view.webContents.getTitle());
             })
-        }
+        });
+
+        // if(isRemoteAddr){
+        //
+        // }else{
+        //     view.webContents.loadURL(url).then(() => {
+        //         eventManager.emit('set:title', view.webContents.getTitle());
+        //     })
+        // }
 
         view.webContents.setWindowOpenHandler((details) => {
             if(Utility.isMainDomainEqual(details.url, url)){
@@ -121,7 +123,7 @@ class ViewManager {
                 return { action: 'deny' };
             }
             //shell.openExternal(details.url).finally();
-            return { action: 'allow' };
+            return {action: 'allow', overrideBrowserWindowOptions: {autoHideMenuBar: true}};
         })
 
         this.views.forEach(view => {
