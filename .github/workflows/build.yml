@@ -11,10 +11,36 @@ jobs:
 
     strategy:
       fail-fast: false
+      max-parallel: 3
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         arch: [x64, arm64]
-      max-parallel: 3
+        include:
+          - os: macos-latest
+            platform: mac
+            artifact_name: mac
+            arch: x64
+          - os: macos-latest
+            platform: mac
+            artifact_name: mac
+            arch: arm64
+          - os: ubuntu-latest
+            platform: linux
+            artifact_name: linux
+            arch: x64
+          - os: ubuntu-latest
+            platform: linux
+            artifact_name: linux
+            arch: arm64
+          - os: windows-latest
+            platform: win
+            artifact_name: win
+            arch: x64
+          - os: windows-latest
+            platform: win
+            artifact_name: win
+            arch: arm64
+
 
     steps:
       - name: Checkout Code
