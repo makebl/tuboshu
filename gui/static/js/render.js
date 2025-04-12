@@ -26,6 +26,9 @@ function updateMenu(menu, pid) {
 }
 
 function handleNavItemClick(event) {
+    const isItemClicked = event.target.closest(".nav-item");
+    if (!isItemClicked) return;
+
     const highlightedItems = event.currentTarget.querySelectorAll(".highlighted");
     highlightedItems.forEach(item => item.classList.remove('highlighted'));
 

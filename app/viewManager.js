@@ -110,14 +110,6 @@ class ViewManager {
             })
         });
 
-        // if(isRemoteAddr){
-        //
-        // }else{
-        //     view.webContents.loadURL(url).then(() => {
-        //         eventManager.emit('set:title', view.webContents.getTitle());
-        //     })
-        // }
-
         view.webContents.setWindowOpenHandler((details) => {
             if(Utility.isMainDomainEqual(details.url, url)){
                 view.webContents.send('open:window', details.url)
@@ -132,7 +124,7 @@ class ViewManager {
         })
 
         this.addView({
-            name: name,
+            name: name.toLowerCase(),
             url: url.toLowerCase(),
             time: Math.floor(Date.now() / 1000),
             object: view

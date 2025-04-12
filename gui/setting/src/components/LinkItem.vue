@@ -87,7 +87,7 @@ const handleClickGetIcon = ()=>{
     <n-avatar round width="40" :src="icon"/>
     <div class="link" @click="handleClickOpenSite">
       <div> {{ element.tag }}</div>
-      <div> {{ element.url }}</div>
+      <div class="link-url"> {{ element.url }}</div>
     </div>
 
     <div class="getIcon">
@@ -136,6 +136,13 @@ const handleClickGetIcon = ()=>{
   color: var(--color-text);
 }
 
+.link-url{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 260px;
+  min-width: 250px;
+}
 .getIcon{
   width: 60px;
   text-align: center;

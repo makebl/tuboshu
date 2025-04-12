@@ -87,11 +87,14 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.platform }}-${{ matrix.arch }}
-          path: dist/*
+          name: build-${{ matrix.artifact_name }}-${{ matrix.arch }}
+          path: |
+            dist/*.exe
+            dist/*.deb
+            dist/*.AppImage
+            dist/*.dmg
           retention-days: 1
           overwrite: true
-          if-no-files-found: error
 
   release:
     name: Create Release
@@ -104,8 +107,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          pattern: build-*
-          merge-multiple: false
 
       - name: Debug Artifacts
         run: ls -R artifacts
@@ -116,10 +117,6 @@ jobs:
           tag_name: ${{ github.ref }}
           name: Release ${{ github.ref_name }}
           files: |
-            artifacts/**/*.exe
-            artifacts/**/*.dmg
-            artifacts/**/*.AppImage
-            artifacts/**/*.deb
-          fail_on_unmatched_files: true
+            artifacts/**/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

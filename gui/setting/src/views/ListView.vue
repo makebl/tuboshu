@@ -88,18 +88,24 @@ const handleSaveJsCode = (element) => {
 };
 
 const handleExportConfig = async () => {
-  const ret = window.myApi.exportConfig();
-  if(ret === true){
-    message.success('导出站点文件成功');
+  try{
+    const ret = window.myApi.exportConfig();
+    if(ret === true) message.success('导出站点文件成功');
+  }catch (error) {
+    message.error('导出失败：'+error);
   }
+
 };
 
 const handleImportConfig = async () => {
-  const ret = await window.myApi.importConfig();
-  await initData();
-  if(ret != null){
-    message.success(`成功导入${ret}个站点`);
+  try{
+    const ret = await window.myApi.importConfig();
+    await initData();
+    if(ret != null) message.success(`成功导入${ret}个站点`);
+  }catch (error) {
+    message.error('导入失败：'+error);
   }
+
 };
 
 </script>

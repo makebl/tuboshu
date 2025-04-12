@@ -6,16 +6,18 @@ import lokiManager from './../store/lokiManager.js'
 
 
 class DataExport {
+
+    static ALLOWED_PROPS = ['url', 'tag', 'name', 'img', 'proxy', 'order', 'isOpen', 'jsCode'];
     constructor() {
     }
 
-    filterObjectByArray(obj, allowedKeys) {
-        for (const key in obj) {
-            if (obj.hasOwnProperty(key) && !allowedKeys.includes(key)) {
-                delete obj[key];
-            }
-        }
-        return obj;
+    filterObjectProperties(obj) {
+        if (typeof obj !== 'object' || obj === null) return {};
+        return Object.fromEntries(
+            Object.entries(obj).filter(([key]) =>
+                DataExport.ALLOWED_PROPS.includes(key)
+            )
+        );
     }
 
     isValidUrl(urlString) {
@@ -27,35 +29,33 @@ class DataExport {
         }
     }
 
+    validateInputData(data) {
+        if (!Array.isArray(data)) {
+            throw new Error('Input data must be an array');
+        }
+        if (data.some(item => !item.url || !item.tag)) {
+            throw new Error('items must contain "url" and "tag" properties');
+        }
+    }
+
     async getConfigData() {
         const manager = await lokiManager;
         const data = manager.getSites();
-        const allows = ['url', 'tag', 'name', 'img', 'proxy', 'order', 'isOpen', 'jsCode']
-        return data.map(item => this.filterObjectByArray(item, allows));
+        return data.map(item => this.filterObjectProperties(item));
     }
 
     async importConfigData(data) {
-        if (!Array.isArray(data)) {
-            throw new Error('Invalid data format. Data must be an array.');
-        }
-        const sites = data.filter(item =>{
-            return item.hasOwnProperty('url') && item.hasOwnProperty('tag') && this.isValidUrl(item.url) && item.tag.length > 0
-        });
-        if(sites.length === 0){
-            throw new Error('There is no legitimate data.');
-        }
+        this.validateInputData(data);
 
-        let total = 0;
         const manager = await lokiManager;
-        const allows = ['url', 'tag', 'name', 'img', 'proxy', 'order', 'isOpen', 'jsCode']
-        sites.forEach(item => {
-            if(item.hasOwnProperty('name')){
-                if(manager.getSite(item.name)) return;
-            }
-            let ret = this.filterObjectByArray(item, allows)
-            manager.addSite(ret);
-            total++
-        });
+        const total = data.reduce((acc, item) => {
+            if (!this.isValidUrl(item.url) || !item.tag?.trim()) return acc;
+            if (item.name && manager.getSite(item.name)) return acc;
+
+            const processedItem = this.filterObjectProperties(item);
+            manager.addSite(processedItem);
+            return acc + 1;
+        }, 0);
         return total;
     }
 
@@ -87,7 +87,7 @@ class DataExport {
                 const data = await fs.readFile(result.filePaths[0], 'utf-8');
                 return await this.importConfigData(JSON.parse(data));
             } catch (error) {
-                throw new Error("can not read the file!"+error);
+                throw new Error("导入失败:"+error);
             }
         });
     }
