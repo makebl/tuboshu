@@ -18,27 +18,21 @@ jobs:
         include:
           - os: macos-latest
             platform: mac
-            artifact_name: mac1
             arch: x64
           - os: macos-latest
             platform: mac
-            artifact_name: mac2
             arch: arm64
           - os: ubuntu-latest
             platform: linux
-            artifact_name: linux1
             arch: x64
           - os: ubuntu-latest
             platform: linux
-            artifact_name: linux2
             arch: arm64
           - os: windows-latest
             platform: win
-            artifact_name: win1
             arch: x64
           - os: windows-latest
             platform: win
-            artifact_name: win2
             arch: arm64
 
 
@@ -56,26 +50,18 @@ jobs:
         with:
           version: 10
 
-      - name: Setup SSH
-        shell: bash
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build Electron App
-        run: pnpm run build -- --platform ${{ matrix.platform }} --arch ${{ matrix.arch }}
+        run: pnpm run build -- --${{ matrix.platform }} --${{ matrix.arch }} -- --config.arch=${{ matrix.arch }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.artifact_name }}-${{ matrix.arch }}
+          name: build-${{ matrix.platform }}-${{ matrix.arch }}
           path: |
             dist/*.exe
             dist/*.deb
@@ -104,7 +90,6 @@ jobs:
           files: "artifacts/**/*"
           draft: false
           prerelease: true
-          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
