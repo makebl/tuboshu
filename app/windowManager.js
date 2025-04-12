@@ -302,6 +302,7 @@ class WindowManager{
             this.window.removeAllListeners('show');
             this.window.removeAllListeners('focus');
             this.window.removeAllListeners('move');
+            this.destroy();
         })
     }
 
@@ -410,7 +411,9 @@ class WindowManager{
     }
 
     destroy() {
-        clearTimeout(this.cleanupTimer);
+       if(this.cleanupTimer) clearTimeout(this.cleanupTimer);
+       if(this.resizeTimer) clearTimeout(this.resizeTimer);
+       if(this.window) this.window = null;
     }
 }
 

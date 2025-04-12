@@ -34,10 +34,12 @@ app.whenReady().then(() => {
 
 app.on('will-quit', () => {
   shortcutManager.unregisterAll();
+  trayManager.destroyTray();
 })
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
+  // if (process.platform !== 'darwin') app.quit()
+  app.quit()
 })
 
 app.on('activate', () => {
