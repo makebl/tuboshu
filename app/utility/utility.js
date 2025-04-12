@@ -98,7 +98,7 @@ class Utility {
                 value: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:"
             };
 
-            const domains = ['yuque.com'];
+            const domains = ['yuque.com', 'wx.mail.qq.com'];
             if(domains.some(domain => details.url.toLowerCase().includes(domain))){
                 details.responseHeaders[cspHeader.name] = cspHeader.value;
             }

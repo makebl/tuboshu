@@ -101,7 +101,7 @@ class ViewManager {
         }
 
         Utility.alterRequestHeader(view, headers)
-        //Utility.alterResponseHeader(view)
+        Utility.alterResponseHeader(view)
 
         this.injectJsCode(view, name);
         this.setProxy(mySession, name).then(()=>{
@@ -133,8 +133,7 @@ class ViewManager {
     }
 
     injectJsCode(view, name){
-        //did-finish-load
-        view.webContents.on('dom-ready',async ()=>{
+        view.webContents.on('did-finish-load',async ()=>{
             const manager = await lokiManager;
             const site = manager.getSite(name);
             if(site && Object.hasOwn(site,'jsCode') && site.jsCode.length > 0){

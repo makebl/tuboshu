@@ -8,35 +8,13 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         arch: [x64, arm64]
-        include:
-          - os: macos-latest
-            platform: mac
-            artifact_name: mac
-            arch: x64
-          - os: macos-latest
-            platform: mac
-            artifact_name: mac
-            arch: arm64
-          - os: ubuntu-latest
-            platform: linux
-            artifact_name: linux
-            arch: x64
-          - os: ubuntu-latest
-            platform: linux
-            artifact_name: linux
-            arch: arm64
-          - os: windows-latest
-            platform: win
-            artifact_name: win
-            arch: x64
-          - os: windows-latest
-            platform: win
-            artifact_name: win
-            arch: arm64
+      max-parallel: 3
 
     steps:
       - name: Checkout Code
@@ -51,22 +29,6 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 10
-
-      - name: Get pnpm store path
-        id: pnpm-store
-        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
-
-      - name: Cache Dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ env.STORE_PATH }}
-            node_modules
-            ~/.cache/electron
-            ~/.cache/electron-builder
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
 
       - name: Setup SSH
         shell: bash
@@ -84,39 +46,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-${{ matrix.artifact_name }}-${{ matrix.arch }}
-          path: |
-            dist/*.exe
-            dist/*.deb
-            dist/*.AppImage
-            dist/*.dmg
-          retention-days: 1
-          overwrite: true
-
-  release:
-    name: Create Release
-    needs: build
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: Debug Artifacts
-        run: ls -R artifacts
-
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref }}
           name: Release ${{ github.ref_name }}
-          files: |
-            artifacts/**/*
+          files: "dist/*"
+          draft: false
+          prerelease: true
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
