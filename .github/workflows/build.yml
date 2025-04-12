@@ -62,7 +62,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Electron App
-        run: pnpm run build -- --${{ matrix.platform }} --${{ matrix.arch }} -- --config.arch=${{ matrix.arch }}
+        run: pnpm run build -- --${{ matrix.platform }} --${{ matrix.arch }} --config.arch=${{ matrix.arch }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
