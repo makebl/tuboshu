@@ -32,24 +32,35 @@ app.whenReady().then(() => {
   shortcutManager.initShortcuts();
 })
 
+
+app.on('before-quit', () => {
+  app.isQuitting = true;
+  const win = windowManager.getWindow();
+  if (win && !win.isDestroyed()) {
+    win.close();
+  }
+});
 app.on('will-quit', () => {
   shortcutManager.unregisterAll();
   trayManager.destroyTray();
 })
 
 app.on('window-all-closed', () => {
-  // if (process.platform !== 'darwin') app.quit()
-  app.quit()
+  if (process.platform === 'darwin') app.dock.hide();
+  else app.quit();
 })
 
 app.on('activate', () => {
   if (!windowManager.getWindow()) {
     windowManager.createWindow();
+  }else{
+    windowManager.getWindow().show();
   }
 })
 
+
 app.on('second-instance', () => {
-  windowManager.getWindow().show();
+  windowManager.getWindow()?.show();
 })
 
 app.on('render-process-gone', (event, webContents, details) => {

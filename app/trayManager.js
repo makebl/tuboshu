@@ -59,7 +59,13 @@ class TrayManager {
 
     toggleWindow() {
         let win = windowManager.getWindow();
-        win.isVisible() ? win.hide():win.show();
+        if(win.isVisible()){
+            win.hide();
+            app.dock?.hide();
+        }else{
+            win.show();
+            app.dock?.show();
+        }
     }
 
     destroyTray() {
