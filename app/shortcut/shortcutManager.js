@@ -10,7 +10,6 @@ import Layout from '../utility/layout.js'
 import CONS from '../constants.js'
 
 
-
 // 在 Electron 中，你可以通过简单的字符串组合来定义一系列的快捷键。
 // 这些字符串是由一个或多个由加号(+)连接的修饰键和一个键（key）组成。
 // 修饰键包括 Command (或 Cmd 代表 macOS 的 Command 键),
@@ -106,12 +105,30 @@ class ShortcutManager{
         menuView.webContents.focus();
 
         lokiManager.then((manager) => {
-            const openMenus = manager.getMenus().openMenus;
+            const openMenus = manager.getGroupMenus().openMenus;
             let idx = openMenus.findIndex(item => item.name === view.name);
             if(openMenus.length === (idx+1))  idx= -1;
 
             let menuView = windowManager.getMenuView();
             menuView.webContents.send('auto:click', openMenus[idx+1]);
+        })
+    }
+
+    groupSiteSwitch(){
+        const menuView = windowManager.getMenuView();
+        menuView.webContents.focus();
+
+        lokiManager.then((manager) => {
+            const groups = manager.getGroups();
+            if(groups.length === 0) return;
+
+            let idx = groups.findIndex(item => item.isOpen === true);
+            if(groups.length === (idx+1)) {
+                manager.resetGroup();
+            }else{
+                manager.updateGroup({name:groups[idx+1].name, isOpen:true})
+            }
+            menuView.webContents.reload();
         })
     }
 

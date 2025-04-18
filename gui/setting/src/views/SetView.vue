@@ -276,7 +276,11 @@ const handleWinChange = (e) => {
           最新版本: <n-tag :bordered="false" type="info" size="medium">{{version.newVersion}}</n-tag>
         </span>
       <span>
-          获取新版：<n-tag :bordered="false" type="info" size="medium"><a target="_blank" href="https://github.com/deepshit2025/tuboshu/releases">点击下载</a></n-tag>
+          获取新版：
+        <n-tag :bordered="false" type="info" size="medium" style="margin-right: 20px;">
+          <a target="_blank" :href="version.github">GitHub下载</a>
+        </n-tag>
+        <n-tag :bordered="false" type="error" size="medium"><a target="_blank" :href="version.download">国内下载</a></n-tag>
         </span>
     </n-card>
   </div>

@@ -54,6 +54,7 @@ class ViewManager {
             if (this.views[i].name === name.toLowerCase()) {
                 this.views[i].time = timestamp;
                 this.views[i].object.setVisible(true)
+                this.views[i].object.webContents.focus();
                 eventManager.emit('set:title', this.views[i].object.webContents.getTitle());
             }else{
                 this.views[i].object.setVisible(false)
@@ -78,7 +79,7 @@ class ViewManager {
 
         const isRemoteAddr = url.toLowerCase().startsWith("http");
         let preloadjs = isRemoteAddr ? "web.js" : "setting.js";
-        if(url.includes("localhost")) preloadjs = "setting.js"
+        if(url.includes("http://localhost:")) preloadjs = "setting.js"
 
         const view = new WebContentsView({
             webPreferences: {
@@ -99,21 +100,15 @@ class ViewManager {
             view.webContents.openDevTools({mode: 'right',activate: true})
         }
 
-        if(isRemoteAddr){
-            Utility.alterRequestHeader(view, headers)
-            //Utility.alterResponseHeader(view)
+        Utility.alterRequestHeader(view, headers)
+        Utility.alterResponseHeader(view)
 
-            this.injectJsCode(view, name);
-            this.setProxy(mySession, name).then(()=>{
-                Utility.loadWithLoading(view, url).then(()=>{
-                    eventManager.emit('set:title', view.webContents.getTitle());
-                })
-            });
-        }else{
-            view.webContents.loadFile(url).then(() => {
+        this.injectJsCode(view, name);
+        this.setProxy(mySession, name).then(()=>{
+            Utility.loadWithLoading(view, url).then(()=>{
                 eventManager.emit('set:title', view.webContents.getTitle());
             })
-        }
+        });
 
         view.webContents.setWindowOpenHandler((details) => {
             if(Utility.isMainDomainEqual(details.url, url)){
@@ -121,7 +116,7 @@ class ViewManager {
                 return { action: 'deny' };
             }
             //shell.openExternal(details.url).finally();
-            return { action: 'allow' };
+            return {action: 'allow', overrideBrowserWindowOptions: {autoHideMenuBar: true}};
         })
 
         this.views.forEach(view => {
@@ -129,7 +124,7 @@ class ViewManager {
         })
 
         this.addView({
-            name: name,
+            name: name.toLowerCase(),
             url: url.toLowerCase(),
             time: Math.floor(Date.now() / 1000),
             object: view
@@ -138,8 +133,7 @@ class ViewManager {
     }
 
     injectJsCode(view, name){
-        //did-finish-load
-        view.webContents.on('dom-ready',async ()=>{
+        view.webContents.on('did-finish-load',async ()=>{
             const manager = await lokiManager;
             const site = manager.getSite(name);
             if(site && Object.hasOwn(site,'jsCode') && site.jsCode.length > 0){

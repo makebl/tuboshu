@@ -6,6 +6,8 @@ import requestJson from './requestTool.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname =  path.dirname(__filename);
+const versionUrl = "https://upsort.com/tuboshu";
+
 const getDomain = (url) => {
     try {
         const hostname = new URL(url.toLowerCase()).hostname;
@@ -23,9 +25,8 @@ class Utility {
     }
 
     static async fetchVersionLatest() {
-        const url = "https://upsort.com/tuboshu";
-        const res =  await requestJson({url})
-        return res.data.version;
+        const res =  await requestJson({url:versionUrl})
+        return res.data;
     }
 
 
@@ -97,7 +98,7 @@ class Utility {
                 value: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:"
             };
 
-            const domains = ['yuque.com'];
+            const domains = ['yuque.com', 'wx.mail.qq.com'];
             if(domains.some(domain => details.url.toLowerCase().includes(domain))){
                 details.responseHeaders[cspHeader.name] = cspHeader.value;
             }
@@ -141,6 +142,11 @@ class Utility {
     }
 
     static async loadWithLoading(view, url, timeout = 10000) {
+        if(url.toLowerCase().startsWith('file:')){
+            await view.webContents.loadURL(url);
+            return;
+        }
+
         await view.webContents.loadFile('gui/loading.html');
         try {
             await Utility.loadURLWithTimeout(view, url, timeout);

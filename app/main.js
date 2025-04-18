@@ -1,4 +1,5 @@
 import { app} from 'electron'
+import path from 'path'
 import windowManager from './windowManager.js'
 import trayManager from'./trayManager.js'
 import shortcutManager from './shortcut/shortcutManager.js'
@@ -16,6 +17,11 @@ app.commandLine.appendSwitch('lang', 'zh-CN');
 app.commandLine.appendSwitch('disable-blink-features', 'AutomationControlled')
 app.commandLine.appendSwitch('disable-features', 'IsolateOrigins,site-per-process')
 
+
+if(process.env.PORTABLE_EXECUTABLE_DIR){
+  app.setPath('userData', path.join(process.env.PORTABLE_EXECUTABLE_DIR, 'tuboshu-user-data'))
+}
+
 app.isQuitting = false;
 const singleLock = app.requestSingleInstanceLock();
 
@@ -26,22 +32,35 @@ app.whenReady().then(() => {
   shortcutManager.initShortcuts();
 })
 
+
+app.on('before-quit', () => {
+  app.isQuitting = true;
+  const win = windowManager.getWindow();
+  if (win && !win.isDestroyed()) {
+    win.close();
+  }
+});
 app.on('will-quit', () => {
   shortcutManager.unregisterAll();
+  trayManager.destroyTray();
 })
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
+  if (process.platform === 'darwin') app.dock.hide();
+  else app.quit();
 })
 
 app.on('activate', () => {
   if (!windowManager.getWindow()) {
     windowManager.createWindow();
+  }else{
+    windowManager.getWindow().show();
   }
 })
 
+
 app.on('second-instance', () => {
-  windowManager.getWindow().show();
+  windowManager.getWindow()?.show();
 })
 
 app.on('render-process-gone', (event, webContents, details) => {

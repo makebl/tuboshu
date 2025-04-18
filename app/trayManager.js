@@ -1,49 +1,78 @@
 import { Tray, Menu, app, shell} from 'electron'
+import path from 'path'
 import CONS from './constants.js'
 import windowManager from './windowManager.js'
 
-function createTray() {
-    const tray = new Tray(CONS.PATH.APP_PATH + '/icon.ico');
-    const contextMenu = Menu.buildFromTemplate([
-        { label: '官网', type: 'normal', click:openWebsite},
-        //{ label: '当前版本', type: 'normal' },
-        //{ label: '检测更新', type: 'normal' },
-        { label: '设置', type: 'normal', click:autoClickSettings},
-        { label: '显示/隐藏', type: 'normal', click:toggleWindow },
-        { label: '退出', type: 'normal', click:reallyQuitApp}
-    ]);
+const selfUrl = "https://github.com/deepshit2025/tuboshu";
+class TrayManager {
+    constructor() {
+        if (TrayManager.instance) return TrayManager.instance;
+        TrayManager.instance = this;
+        this.tray = null;
+    }
 
-    tray.setToolTip("土拨鼠");
-    tray.setContextMenu(contextMenu);
-    tray.on('click', toggleWindow);
+    createTray() {
+        const iconFile = process.platform === 'darwin' ? 'build/linux_icon.png' : 'icon.ico';
+        const iconPath = path.join(CONS.PATH.APP_PATH, iconFile);
+
+        this.tray = new Tray(iconPath);
+        this.tray.setToolTip("土拨鼠");
+        this.updateMenu();
+
+        if (process.platform === 'darwin') {
+            this.tray.on('right-click', () => this.tray.popUpContextMenu());
+        } else {
+            this.tray.on('click', () => this.toggleWindow());
+        }
+    }
+
+    updateMenu() {
+        const contextMenu = Menu.buildFromTemplate([
+            { label: '官网', click: () => this.openWebsite(selfUrl) },
+            { label: '设置', click: () => this.autoClickSettings() },
+            { type: 'separator' },
+            { label: '显示/隐藏', click: () => this.toggleWindow() },
+            { label: '退出', click: () => this.reallyQuitApp() }
+        ]);
+        this.tray.setContextMenu(contextMenu);
+    }
+
+
+    openWebsite(url){
+        shell.openExternal(url).catch(err => {
+            console.error('打开链接失败:', err);
+        });
+    }
+
+    autoClickSettings(){
+        let win = windowManager.getWindow();
+        if(!win.isVisible()) win.show();
+
+        let menuView = windowManager.getMenuView();
+        menuView.webContents.send('auto:click', CONS.SETTING[0]);
+    }
+
+    reallyQuitApp() {
+        app.isQuitting = true;
+        app.quit();
+    }
+
+    toggleWindow() {
+        let win = windowManager.getWindow();
+        if(win.isVisible()){
+            win.hide();
+            app.dock?.hide();
+        }else{
+            win.show();
+            app.dock?.show();
+        }
+    }
+
+    destroyTray() {
+        if (this.tray) {
+            this.tray.destroy();
+            this.tray = null;
+        }
+    }
 }
-
-function openWebsite(){
-    shell.openExternal('https://github.com/deepshit2025/tuboshu').finally();
-}
-
-function autoClickSettings(){
-    let win = windowManager.getWindow();
-    if(!win.isVisible()) win.show();
-
-    let menuView = windowManager.getMenuView();
-    menuView.webContents.send('auto:click', CONS.SETTING[0]);
-}
-
-function reallyQuitApp() {
-    app.isQuitting = true;
-    app.quit();
-}
-
-function toggleWindow() {
-    let win = windowManager.getWindow();
-    win.isVisible() ? win.hide():win.show();
-}
-
-export default {
-    createTray,
-    toggleWindow,
-    reallyQuitApp,
-    autoClickSettings,
-    openWebsite
-};
+export default  new TrayManager();

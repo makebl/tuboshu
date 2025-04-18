@@ -3,67 +3,55 @@ name: Build Electron App
 on:
   push:
     tags:
-      - "v*"
+      - "n*"
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+
     strategy:
+      fail-fast: false
+      max-parallel: 3
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         arch: [x64, arm64]
         include:
           - os: macos-latest
             platform: mac
-            artifact_name: mac
             arch: x64
           - os: macos-latest
             platform: mac
-            artifact_name: mac
             arch: arm64
           - os: ubuntu-latest
             platform: linux
-            artifact_name: linux
             arch: x64
           - os: ubuntu-latest
             platform: linux
-            artifact_name: linux
             arch: arm64
           - os: windows-latest
             platform: win
-            artifact_name: win
             arch: x64
           - os: windows-latest
             platform: win
-            artifact_name: win
             arch: arm64
+
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Cache Dependencies
-        uses: actions/cache@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
         with:
-          path: |
-            ~/.pnpm-store
-            node_modules
-            ~/.cache/electron
-            ~/.cache/electron-builder
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-
-      - name: Install pnpm (Fallback)
-        if: ${{ !env.pnpm }}
-        run: npm install -g pnpm
+          version: 10
 
       - name: Setup SSH
+        shell: bash
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
@@ -74,14 +62,14 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Electron App
-        run: pnpm run build -- --${{ matrix.platform }} --${{ matrix.arch }}
+        run: pnpm run build --${{ matrix.platform }} --${{ matrix.arch }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.artifact_name }}-${{ matrix.arch }}
+          name: build-${{ matrix.platform }}-${{ matrix.arch }}
           path: |
             dist/*.exe
             dist/*.deb
@@ -92,21 +80,24 @@ jobs:
 
   release:
     name: Create Release
-    needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
 
     steps:
-      - name: Download Artifacts
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
+          pattern: build-*
           path: artifacts
+
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref }}
           name: Release ${{ github.ref_name }}
-          files: |
-            artifacts/**/*
+          files: "artifacts/**/*"
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

@@ -1,8 +1,13 @@
 import path from 'path'
 import { fileURLToPath } from 'url';
+import {app} from "electron";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname =  path.dirname(__filename);
+
+const SETTING_URL = app.isPackaged
+    ? `file://${path.join(__dirname, '..', 'gui/dist/index.html')}`
+    : 'http://localhost:5173/';
 
 export default Object.freeze({
     SIZE: {
@@ -33,8 +38,7 @@ export default Object.freeze({
         {
             tag: "设置",
             name: "setting",
-            url: "gui/dist/index.html/",
-            // url: "http://localhost:5173/",
+            url: SETTING_URL,
             img: "/gui/static/images/logo/setting.png",
         },
     ],
@@ -166,9 +170,16 @@ export default Object.freeze({
             isOpen:true,
         },
         {
-            tag: "站点切换",
+            tag: "切换站点",
             name: "softwareSiteSwitch",
             cmd: "CommandOrControl+Tab",
+            isGlobal:false,
+            isOpen:true,
+        },
+        {
+            tag: "切换分组",
+            name: "groupSiteSwitch",
+            cmd: "CommandOrControl+`",
             isGlobal:false,
             isOpen:true,
         },
@@ -190,13 +201,6 @@ export default Object.freeze({
             tag: "刷新当前页面",
             name: "currentPageRefresher",
             cmd: "CommandOrControl+R",
-            isGlobal:false,
-            isOpen:true,
-        },
-        {
-            tag: "重新加载主页",
-            name: "reloadHomepage",
-            cmd: "CommandOrControl+Shift+R",
             isGlobal:false,
             isOpen:true,
         },
